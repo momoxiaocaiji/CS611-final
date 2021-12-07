@@ -1,5 +1,7 @@
 package bankUI;
 
+import Service.UserService;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,6 +14,8 @@ public class Login extends JFrame implements ActionListener {
     JTextField tf1;
     JPasswordField pf2;
     JButton b1,b2,b3;
+
+    private UserService userService;
 
     public Login(){
 
