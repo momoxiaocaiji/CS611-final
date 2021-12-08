@@ -4,13 +4,30 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+
+class Amount {
+    Map<String, Double> currencies;
+    public Amount(){
+        currencies = new HashMap<>();
+        currencies.put("USD", 1000.00);
+        currencies.put("CNY", 1000.00);
+        currencies.put("HKD", 1000.00);
+    }
+}
 
 public class Core extends JFrame implements ActionListener {
+
+    private static List<Amount> amountList = new ArrayList<>();
+
     private JTabbedPane tabMenu;
     private JPanel info, stock, transaction;
     private JPanel checking, saving;
 
-    private JButton deposit;
+    private JButton deposit, create, withdrawal, transfer, loan;
     JButton b1,b2,b3,b4,b5,b6,b7;
 
     public Core(){
@@ -20,6 +37,24 @@ public class Core extends JFrame implements ActionListener {
 
         checking = new JPanel();
         checking.setBorder(BorderFactory.createTitledBorder("Checking"));
+        checking.setLayout(new GridLayout(amountList.size() + 1,1));
+        for (Amount amount : amountList) {
+            JPanel oneAccount = new JPanel();
+            oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+            oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0 , 5));
+            checking.add(oneAccount);
+            for (String type : amount.currencies.keySet()) {
+                JLabel t = new JLabel(type);
+                t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
+                b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                oneAccount.add(t);
+                oneAccount.add(b);
+            }
+        }
+        create = new JButton("+ Create New Account");
+        create.addActionListener(this);
+        checking.add(create);
 
 
         saving = new JPanel();
@@ -38,58 +73,31 @@ public class Core extends JFrame implements ActionListener {
         deposit.setFont(new Font("System", Font.BOLD, 18));
         deposit.setForeground(Color.BLACK);
 
-        b2 = new JButton("CASH WITHDRAWL");
-        b2.setFont(new Font("System", Font.BOLD, 18));
-        b2.setBackground(Color.BLACK);
-        b2.setForeground(Color.WHITE);
+        withdrawal = new JButton("WITHDRAWAL");
+        withdrawal.setFont(new Font("System", Font.BOLD, 18));
+        withdrawal.setForeground(Color.BLACK);
 
-        b3 = new JButton("FAST CASH");
-        b3.setFont(new Font("System", Font.BOLD, 18));
-        b3.setBackground(Color.BLACK);
-        b3.setForeground(Color.WHITE);
+        transfer = new JButton("TRANSFER");
+        transfer.setFont(new Font("System", Font.BOLD, 18));
+        transfer.setForeground(Color.BLACK);
 
-        b4 = new JButton("MINI STATEMENT");
-        b4.setFont(new Font("System", Font.BOLD, 18));
-        b4.setBackground(Color.BLACK);
-        b4.setForeground(Color.WHITE);
-
-        b5 = new JButton("PIN CHANGE");
-        b5.setFont(new Font("System", Font.BOLD, 18));
-        b5.setBackground(Color.BLACK);
-        b5.setForeground(Color.WHITE);
-
-        b6 = new JButton("BALANCE ENQUIRY");
-        b6.setFont(new Font("System", Font.BOLD, 18));
-        b6.setBackground(Color.BLACK);
-        b6.setForeground(Color.WHITE);
-
-        b7 = new JButton("EXIT");
-        b7.setFont(new Font("System", Font.BOLD, 18));
-        b7.setBackground(Color.BLACK);
-        b7.setForeground(Color.WHITE);
+        loan = new JButton("LOAN");
+        loan.setFont(new Font("System", Font.BOLD, 18));
+        loan.setForeground(Color.BLACK);
 
         transaction.setLayout(null);
 
-        deposit.setBounds(150,100,300,60);
+        deposit.setBounds(40,200,300,60);
         transaction.add(deposit);
 
-        b2.setBounds(440,250,300,60);
-        transaction.add(b2);
+        withdrawal.setBounds(440,200,300,60);
+        transaction.add(withdrawal);
 
-        b3.setBounds(40,360,300,60);
-        transaction.add(b3);
+        transfer.setBounds(40,400,300,60);
+        transaction.add(transfer);
 
-        b4.setBounds(440,360,300,60);
-        transaction.add(b4);
-
-        b5.setBounds(40,470,300,60);
-        transaction.add(b5);
-
-        b6.setBounds(440,470,300,60);
-        transaction.add(b6);
-
-        b7.setBounds(240,600,300,60);
-        transaction.add(b7);
+        loan.setBounds(440,400,300,60);
+        transaction.add(loan);
 
         //
         tabMenu = new JTabbedPane();
@@ -107,9 +115,22 @@ public class Core extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent ae){}
+    public void actionPerformed(ActionEvent ae){
+        try {
+            if (ae.getSource() == create){
+                new CreateAccount("Checking", "10000000").setVisible(true);
+                //setVisible(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error!!!");
+        }
+    }
 
     public static void main(String[] args){
+        amountList.add(new Amount());
+        amountList.add(new Amount());
+
         new Core().setVisible(true);
     }
 }
