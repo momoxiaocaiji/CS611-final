@@ -161,7 +161,16 @@ public class Registry extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent ae){}
+    public void actionPerformed(ActionEvent ae){
+        try {
+            if (ae.getSource() == b) {
+                new Login().setVisible(true);
+                setVisible(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args){
         new Registry().setVisible(true);

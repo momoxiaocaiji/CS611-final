@@ -94,33 +94,27 @@ public class Login extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent ae){
 
-//        try{
-//            conn c1 = new conn();
-//            String a  = tf1.getText();
-//            String b  = pf2.getText();
-//            String q  = "select * from login where CardNo = '"+a+"' and PIN = '"+b+"'";
-//            ResultSet rs = c1.s.executeQuery(q);
-//
-//            if(ae.getSource()==b1){
-//                if(rs.next()){
-//                    new Transactions().setVisible(true);
-//                    setVisible(false);
-//
-//                }else{
-//                    JOptionPane.showMessageDialog(null, "Incorrect Card Number or Password");
-//
-//                }
-//            }else if(ae.getSource()==b2){
-//                tf1.setText("");
-//                pf2.setText("");
-//            }else if(ae.getSource()==b3){
-//                new Signup().setVisible(true);
-//                setVisible(false);
-//            }
-//        }catch(Exception e){
-//            e.printStackTrace();
-//            System.out.println("error: "+e);
-//        }
+        try{
+
+            if(ae.getSource()==b1){
+                // todo
+                if(true){
+                    new Core().setVisible(true);
+                    setVisible(false);
+                }else{
+                    JOptionPane.showMessageDialog(null, "Incorrect Card Number or Password");
+                }
+            }else if(ae.getSource()==b2){
+                tf1.setText("");
+                pf2.setText("");
+            }else if(ae.getSource()==b3){
+                new Registry().setVisible(true);
+                setVisible(false);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            System.out.println("error: "+e);
+        }
 
     }
 
