@@ -89,12 +89,15 @@ public class Core extends JFrame implements ActionListener {
 
         deposit.setBounds(40,200,300,60);
         transaction.add(deposit);
+        deposit.addActionListener(this);
 
         withdrawal.setBounds(440,200,300,60);
         transaction.add(withdrawal);
+        withdrawal.addActionListener(this);
 
         transfer.setBounds(40,400,300,60);
         transaction.add(transfer);
+        transfer.addActionListener(this);
 
         loan.setBounds(440,400,300,60);
         transaction.add(loan);
@@ -120,6 +123,12 @@ public class Core extends JFrame implements ActionListener {
             if (ae.getSource() == create){
                 new CreateAccount("Checking", "10000000").setVisible(true);
                 //setVisible(false);
+            } else if (ae.getSource() == deposit) {
+                new TransactionDetail(Constant.TRANSACTION_DEPOSIT).setVisible(true);
+            } else if (ae.getSource() == withdrawal) {
+                new TransactionDetail(Constant.TRANSACTION_WITHDRAWAL).setVisible(true);
+            } else if (ae.getSource() == transfer) {
+                new TransactionDetail(Constant.TRANSACTION_TRANSFER).setVisible(true);
             }
         } catch (Exception e) {
             e.printStackTrace();

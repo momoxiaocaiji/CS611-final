@@ -54,7 +54,7 @@ public class CreateAccount extends JFrame implements ActionListener {
 
         getContentPane().setBackground(Color.WHITE);
         setTitle("Create    " + type + "    Account");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450,350);
         setLocation(600,250);
         setVisible(true);
