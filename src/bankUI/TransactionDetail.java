@@ -25,6 +25,10 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
     JLabel balanceNum = new JLabel("");
 
+    JLabel interest = new JLabel("InterestRate：");
+
+    JLabel iRate = new JLabel("0.1% / per day");
+
     JLabel amount = new JLabel("Amount: ");
 
     JTextField amountNum = new JTextField(20);
@@ -56,6 +60,10 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
         balanceNum.setFont(new Font("Raleway", Font.BOLD, 20));
 
+        interest.setFont(new Font("Raleway", Font.BOLD, 20));
+
+        iRate.setFont(new Font("Raleway", Font.BOLD, 20));
+
         amount.setFont(new Font("Raleway", Font.BOLD, 20));
 
         amount.setFont(new Font("Raleway", Font.BOLD, 20));
@@ -82,11 +90,20 @@ public class TransactionDetail extends JFrame implements ActionListener {
         cType.setSelectedIndex(0);
         jCenter.add(cType);
 
-        balance.setBounds(130, 220, 200,30);
-        jCenter.add(balance);
+        if (type != Constant.TRANSACTION_LOAN){
+            balance.setBounds(130, 220, 200,30);
+            jCenter.add(balance);
 
-        balanceNum.setBounds(350, 220, 200,30);
-        jCenter.add(balanceNum);
+            balanceNum.setBounds(350, 220, 200,30);
+            jCenter.add(balanceNum);
+        } else {
+            interest.setBounds(130, 220, 200,30);
+            jCenter.add(interest);
+
+            iRate.setBounds(350, 220, 200,30);
+            jCenter.add(iRate);
+        }
+
 
         amount.setBounds(130, 290, 200,30);
         jCenter.add(amount);

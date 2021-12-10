@@ -103,6 +103,7 @@ public class Core extends JFrame implements ActionListener {
 
         loan.setBounds(440,400,300,60);
         transaction.add(loan);
+        loan.addActionListener(this);
 
         //
         tabMenu = new JTabbedPane();
@@ -131,6 +132,8 @@ public class Core extends JFrame implements ActionListener {
                 new TransactionDetail(Constant.TRANSACTION_WITHDRAWAL).setVisible(true);
             } else if (ae.getSource() == transfer) {
                 new TransactionDetail(Constant.TRANSACTION_TRANSFER).setVisible(true);
+            } else if (ae.getSource() == loan) {
+                new LoanDetail().setVisible(true);
             }
         } catch (Exception e) {
             e.printStackTrace();
