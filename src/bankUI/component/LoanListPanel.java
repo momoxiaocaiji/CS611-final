@@ -85,6 +85,7 @@ public class LoanListPanel extends JPanel {
                 op.setFont(new Font("Raleway", Font.BOLD, 14));
                 op.setBorder(BorderFactory.createLineBorder(Color.blue));
                 loanP.add(op, BorderLayout.EAST);
+                op.setPreferredSize(new Dimension(80, 0));
             }
         }
         JPanel empty = new JPanel();

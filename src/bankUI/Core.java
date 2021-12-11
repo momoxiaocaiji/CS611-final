@@ -1,6 +1,8 @@
 package bankUI;
 
 import bankUI.component.HistoryTable;
+import bankUI.component.StockListPanel;
+import bankUI.entity.Stock;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -12,6 +14,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 
@@ -35,12 +39,19 @@ public class Core extends JFrame implements ActionListener {
     private JPanel history;
     private JPanel checking, saving;
 
-    private JButton deposit, create, withdrawal, transfer, loan;
+    private JButton deposit, withdrawal, transfer, loan;
+    private JButton createChecking, createSaving, createSecurities;
     private HistoryTable historyData;
+
+    private JLabel amountNum, realizedNum, unrealizedNum;
+
+    private String test;
 
     public Core() {
         amountList.add(new Amount());
         amountList.add(new Amount());
+
+        // -----------------------------------------
         // info
         info = new JPanel();
         info.setLayout(new GridLayout(2, 1));
@@ -62,9 +73,9 @@ public class Core extends JFrame implements ActionListener {
                 oneAccount.add(b);
             }
         }
-        create = new JButton("+ Create New Account");
-        create.addActionListener(this);
-        checking.add(create);
+        createChecking = new JButton("+ Create New Account");
+        createChecking.addActionListener(this);
+        checking.add(createChecking);
 
 
         saving = new JPanel();
@@ -74,9 +85,78 @@ public class Core extends JFrame implements ActionListener {
         info.add(checking);
         info.add(saving);
 
+        // -----------------------------------------
+
+        // -----------------------------------------
         // stock
         stock = new JPanel();
+        stock.setLayout(new BorderLayout());
+        Amount se = new Amount();
+        // user doesn't have a securities account.
+        if (se == null) {
+            createSecurities = new JButton("+ Create New Account");
+            stock.add(createSecurities, BorderLayout.NORTH);
+            createSecurities.setPreferredSize(new Dimension(0,120));
+        } else {
+            JPanel securitiesAccountPanel = new JPanel();
+            stock.add(securitiesAccountPanel, BorderLayout.NORTH);
+            securitiesAccountPanel.setBackground(Color.white);
+            securitiesAccountPanel.setPreferredSize(new Dimension(0, 120));
+            securitiesAccountPanel.setLayout(new GridLayout(3, 2));
+            List<String> testNum = new ArrayList<>();
+            testNum.add("$2000.0");
+            JLabel amount = new JLabel("Amount: ");
+            amount.setFont(new Font("Andale Mono", Font.BOLD, 16));
+            amountNum = new JLabel(testNum.get(0));
+            amountNum.setFont(new Font("Arial", Font.PLAIN, 16));
+            securitiesAccountPanel.add(amount);
+            securitiesAccountPanel.add(amountNum);
 
+            JLabel realized = new JLabel("Realized Profit: ");
+            realized.setFont(new Font("Andale Mono", Font.BOLD, 16));
+            realizedNum = new JLabel("$20.0");
+            realizedNum.setFont(new Font("Arial", Font.PLAIN, 16));
+            securitiesAccountPanel.add(realized);
+            securitiesAccountPanel.add(realizedNum);
+
+            JLabel unrealized = new JLabel("Unrealized Profit: ");
+            unrealized.setFont(new Font("Andale Mono", Font.BOLD, 16));
+            unrealizedNum = new JLabel("$20.0");
+            unrealizedNum.setFont(new Font("Arial", Font.PLAIN, 16));
+            securitiesAccountPanel.add(unrealized);
+            securitiesAccountPanel.add(unrealizedNum);
+
+            // stock deal
+            JTabbedPane stockTransactionMenu = new JTabbedPane();
+            JPanel buyStock = new JPanel();
+            JPanel saleStock = new JPanel();
+            stockTransactionMenu.add("Buy", buyStock);
+            stockTransactionMenu.add("Sale", saleStock);
+            stock.add(stockTransactionMenu, BorderLayout.CENTER);
+
+            buyStock.setLayout(new BorderLayout());
+            List<Stock> stockList = new ArrayList<>();
+            stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
+            stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
+            StockListPanel buyList = new StockListPanel(stockList, Constant.STOCK_CUSTOMER_BUY);
+            buyList.setPreferredSize(new Dimension(750, 650));
+            buyStock.add(buyList, BorderLayout.CENTER);
+            buyStock.add(new JButton("Buy via Stock Code"), BorderLayout.SOUTH);
+            buyList.setAssoFrame(this);
+
+            stockList.get(0).setCost(9.0);
+            stockList.get(0).setNum(100);
+            stockList.get(1).setCost(8.0);
+            stockList.get(1).setNum(200);
+            StockListPanel saleList = new StockListPanel(stockList, Constant.STOCK_CUSTOMER_SALE);
+            saleList.setPreferredSize(new Dimension(750, 650));
+            saleStock.add(saleList);
+        }
+
+
+        // -----------------------------------------
+
+        // -----------------------------------------
         // transaction
         transaction = new JPanel();
         deposit = new JButton("DEPOSIT");
@@ -112,7 +192,9 @@ public class Core extends JFrame implements ActionListener {
         loan.setBounds(440, 400, 300, 60);
         transaction.add(loan);
         loan.addActionListener(this);
+        // -----------------------------------------
 
+        // -----------------------------------------
         // History
 
         historyData = new HistoryTable();
@@ -135,6 +217,7 @@ public class Core extends JFrame implements ActionListener {
         });
         filterPanel.add(filterText);
         filterPanel.add(button);
+        // -----------------------------------------
 
         //
         tabMenu = new JTabbedPane();
@@ -155,7 +238,7 @@ public class Core extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent ae) {
         try {
-            if (ae.getSource() == create) {
+            if (ae.getSource() == createChecking) {
                 new CreateAccount("Checking", "10000000").setVisible(true);
                 //setVisible(false);
             } else if (ae.getSource() == deposit) {
@@ -171,6 +254,10 @@ public class Core extends JFrame implements ActionListener {
             e.printStackTrace();
             System.out.println("Error!!!");
         }
+    }
+
+    public void changeInfo(String test) {
+        amountNum.setText(test);
     }
 
     public static void main(String[] args) {

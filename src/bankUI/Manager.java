@@ -2,7 +2,9 @@ package bankUI;
 
 import bankUI.component.HistoryTable;
 import bankUI.component.LoanListPanel;
+import bankUI.component.StockListPanel;
 import bankUI.entity.Loan;
+import bankUI.entity.Stock;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +18,10 @@ public class Manager extends JFrame implements ActionListener {
     private static List<Amount> amountList = new ArrayList<>();
 
     private JTabbedPane outerMenu, checkMenu;
-    private JPanel check, report, stock, loanRequest;
-    private JPanel checking, saving, ownStock;
+    private JPanel check, report, stock, loanRequest, profit;
+    private JPanel checking, saving;
     private LoanListPanel loan, requestList;
+    private StockListPanel ownStock, wholeStockList;
     private JTextField customerID;
     private JButton search;
     private HistoryTable historyData;
@@ -62,7 +65,7 @@ public class Manager extends JFrame implements ActionListener {
         // --------------------------------------
 
         // --------------------------------------
-        ownStock = new JPanel();
+        ownStock = new StockListPanel();
         ownStock.setBackground(Color.white);
         // --------------------------------------
 
@@ -100,6 +103,15 @@ public class Manager extends JFrame implements ActionListener {
 
         // stock
         stock = new JPanel();
+        stock.setLayout(null);
+        List<Stock> stockList = new ArrayList<>();
+        stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
+        stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
+        stockList.add(new Stock("AA", 5.0, 7.8, 4.3, 4.9));
+        stockList.add(new Stock("BB", 5.0, 7.8, 4.3, 4.9));
+        wholeStockList = new StockListPanel(stockList, Constant.STOCK_MANAGER_MODIFY);
+        wholeStockList.setSize(900, 800);
+        stock.add(wholeStockList);
 
         // loanRequest
         loanRequest = new JPanel();
@@ -111,12 +123,48 @@ public class Manager extends JFrame implements ActionListener {
         requestList.setSize(900, 800);
         loanRequest.add(requestList);
 
+        // profit
+        profit = new JPanel();
+        profit.setLayout(null);
+        JLabel bankProfit = new JLabel("Bank Profit: ");
+        bankProfit.setFont(new Font("System", Font.BOLD, 25));
+        JLabel profitNum = new JLabel("$10000.0");
+        profitNum.setFont(new Font("System", Font.BOLD, 25));
+
+        JLabel withdrawalProfit = new JLabel("Withdrawal Profit: ");
+        withdrawalProfit.setFont(new Font("System", Font.BOLD, 25));
+        JTextField withdrawalNum = new JTextField(25);
+        withdrawalNum.setFont(new Font("System", Font.BOLD, 25));
+
+        JButton exc = new JButton("Withdrawal");
+        setFont(new Font("Raleway", Font.BOLD, 25));
+
+
+        bankProfit.setBounds(170, 200, 300, 60);
+        profit.add(bankProfit);
+
+
+        profitNum.setBounds(570, 200, 300, 60);
+        profit.add(profitNum);
+
+
+        withdrawalProfit.setBounds(170, 350, 300, 60);
+        profit.add(withdrawalProfit);
+
+
+        withdrawalNum.setBounds(570, 350, 300, 60);
+        profit.add(withdrawalNum);
+
+        exc.setBounds(390, 500, 200, 50);
+        profit.add(exc);
+
 
         outerMenu = new JTabbedPane();
         outerMenu.add("Check Customer", check);
         outerMenu.add("Daily Report", report);
         outerMenu.add("Stock", stock);
         outerMenu.add("Loan Request", loanRequest);
+        outerMenu.add("Bank Profit", profit);
 
 
         add(outerMenu);
@@ -184,10 +232,19 @@ public class Manager extends JFrame implements ActionListener {
 
                 // -------------------------------
 
+                // -------------------------------
+                // stock
+                ownStock.removeAll();
+                List<Stock> stockList = new ArrayList<>();
+                stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
+                stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
+                ownStock.resetData(stockList);
+                // -------------------------------
 
                 checking.revalidate();
                 saving.revalidate();
                 loan.revalidate();
+                ownStock.revalidate();
             }
         } catch (Exception e) {
             e.printStackTrace();
