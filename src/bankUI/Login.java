@@ -98,10 +98,14 @@ public class Login extends JFrame implements ActionListener {
 
             if(ae.getSource()==b1){
                 // todo
-                if(true){
+                if(!tf1.getText().equals("admin")){
                     new Core().setVisible(true);
                     setVisible(false);
-                }else{
+                } else if (tf1.getText().equals("admin")) {
+                    new Manager().setVisible(true);
+                    setVisible(false);
+                }
+                else{
                     JOptionPane.showMessageDialog(null, "Incorrect Card Number or Password");
                 }
             }else if(ae.getSource()==b2){
