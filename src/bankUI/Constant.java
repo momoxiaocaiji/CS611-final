@@ -14,4 +14,9 @@ public class Constant {
     public static final int STOCK_CUSTOMER_SALE = 2;
     public static final int STOCK_MANAGER_CHECK = 3;
     public static final int STOCK_MANAGER_MODIFY = 4;
+
+    public static final int SIGN_UP_OK = 200;
+    public static final int SIGN_UP_DUPLICATE = 501;
+    public static final int SIGN_UP_DATABASE_ERROR = 500;
+    public static final int SIGN_UP_ERROR = 400;
 }
