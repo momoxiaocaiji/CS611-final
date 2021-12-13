@@ -1,13 +1,20 @@
 package model;
 
+import java.util.Arrays;
+
 public class CustAccounts {
 
     private int customerId;
-    private String[] accountIds;
+    private CheckingAccount checkingAccount;
+    private SavingAccount savingAccount;
+    private int accountNum;
 
-    public CustAccounts(int customerId, String[] accountIds) {
+
+    public CustAccounts(int customerId, CheckingAccount checkingAccount, SavingAccount savingAccount, int accountNum) {
         this.customerId = customerId;
-        this.accountIds = accountIds;
+        this.checkingAccount = checkingAccount;
+        this.savingAccount = savingAccount;
+        this.accountNum = accountNum;
     }
 
     public int getCustomerId() {
@@ -18,11 +25,37 @@ public class CustAccounts {
         this.customerId = customerId;
     }
 
-    public String[] getAccountIds() {
-        return accountIds;
+    public CheckingAccount getCheckingAccount() {
+        return checkingAccount;
     }
 
-    public void setAccountIds(String[] accountIds) {
-        this.accountIds = accountIds;
+    public void setCheckingAccount(CheckingAccount checkingAccount) {
+        this.checkingAccount = checkingAccount;
+    }
+
+    public SavingAccount getSavingAccount() {
+        return savingAccount;
+    }
+
+    public void setSavingAccount(SavingAccount savingAccount) {
+        this.savingAccount = savingAccount;
+    }
+
+    public int getAccountNum() {
+        return accountNum;
+    }
+
+    public void setAccountNum(int accountNum) {
+        this.accountNum = accountNum;
+    }
+
+    @Override
+    public String toString() {
+        return "CustAccounts{" +
+                "customerId=" + customerId +
+                ", checkingAccount=" + checkingAccount +
+                ", savingAccount=" + savingAccount +
+                ", accountNum=" + accountNum +
+                '}';
     }
 }

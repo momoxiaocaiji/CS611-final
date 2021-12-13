@@ -55,4 +55,14 @@ public class Person {
     public void setDob(Date dob) {
         this.dob = dob;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", personId=" + personId +
+                ", email='" + email + '\'' +
+                ", dob=" + dob +
+                '}';
+    }
 }

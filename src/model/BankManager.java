@@ -15,4 +15,11 @@ public class BankManager extends Person {
     public void setManagerId(int managerId) {
         this.managerId = managerId;
     }
+
+    @Override
+    public String toString() {
+        return "BankManager{" +
+                "managerId=" + managerId +
+                '}';
+    }
 }

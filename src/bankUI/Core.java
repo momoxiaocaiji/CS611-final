@@ -3,6 +3,7 @@ package bankUI;
 import bankUI.component.HistoryTable;
 import bankUI.component.StockListPanel;
 import bankUI.entity.Stock;
+import controller.AccountController;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -47,9 +48,20 @@ public class Core extends JFrame implements ActionListener {
 
     private String test;
 
-    public Core() {
-        amountList.add(new Amount());
-        amountList.add(new Amount());
+
+    // DATA
+    private List userAccountInfo;
+    private String username;
+
+
+    // MVC
+    private AccountController accountController = new AccountController();
+
+    public Core(List userInfo, String username) {
+        //amountList.add(new Amount());
+        //amountList.add(new Amount());
+        userAccountInfo = userInfo;
+        this.username = username;
 
         // -----------------------------------------
         // info
@@ -57,26 +69,8 @@ public class Core extends JFrame implements ActionListener {
         info.setLayout(new GridLayout(2, 1));
 
         checking = new JPanel();
+        fillInfo(userAccountInfo);
         checking.setBorder(BorderFactory.createTitledBorder("Checking"));
-        checking.setLayout(new GridLayout(amountList.size() + 1, 1));
-        for (Amount amount : amountList) {
-            JPanel oneAccount = new JPanel();
-            oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
-            oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0, 5));
-            checking.add(oneAccount);
-            for (String type : amount.currencies.keySet()) {
-                JLabel t = new JLabel(type);
-                t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
-                JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
-                b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
-                oneAccount.add(t);
-                oneAccount.add(b);
-            }
-        }
-        createChecking = new JButton("+ Create New Account");
-        createChecking.addActionListener(this);
-        checking.add(createChecking);
-
 
         saving = new JPanel();
         saving.setBorder(BorderFactory.createTitledBorder("Saving"));
@@ -96,7 +90,7 @@ public class Core extends JFrame implements ActionListener {
         if (se == null) {
             createSecurities = new JButton("+ Create New Account");
             stock.add(createSecurities, BorderLayout.NORTH);
-            createSecurities.setPreferredSize(new Dimension(0,120));
+            createSecurities.setPreferredSize(new Dimension(0, 120));
         } else {
             JPanel securitiesAccountPanel = new JPanel();
             stock.add(securitiesAccountPanel, BorderLayout.NORTH);
@@ -212,7 +206,7 @@ public class Core extends JFrame implements ActionListener {
             if (text.length() == 0) {
                 historyData.getSorter().setRowFilter(null);
             } else {
-                historyData.getSorter().setRowFilter(RowFilter.regexFilter(".*" +text+".*"));
+                historyData.getSorter().setRowFilter(RowFilter.regexFilter(".*" + text + ".*"));
             }
         });
         filterPanel.add(filterText);
@@ -239,7 +233,7 @@ public class Core extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         try {
             if (ae.getSource() == createChecking) {
-                new CreateAccount("Checking", "10000000").setVisible(true);
+                new CreateAccount("Checking", "10000000", username, this).setVisible(true);
                 //setVisible(false);
             } else if (ae.getSource() == deposit) {
                 new TransactionDetail(Constant.TRANSACTION_DEPOSIT).setVisible(true);
@@ -260,8 +254,33 @@ public class Core extends JFrame implements ActionListener {
         amountNum.setText(test);
     }
 
-    public static void main(String[] args) {
-
-        new Core().setVisible(true);
+    public void fillInfo(List userAccountInfo){
+        // Checking
+        checking.removeAll();
+        amountList.add(new Amount());
+        checking.setLayout(new GridLayout(amountList.size() + 1, 1));
+        for (Amount amount : amountList) {
+            JPanel oneAccount = new JPanel();
+            oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+            oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0, 5));
+            checking.add(oneAccount);
+            for (String type : amount.currencies.keySet()) {
+                JLabel t = new JLabel(type);
+                t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
+                b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                oneAccount.add(t);
+                oneAccount.add(b);
+            }
+        }
+        createChecking = new JButton("+ Create New Account");
+        createChecking.addActionListener(this);
+        checking.add(createChecking);
+        checking.revalidate();
     }
+
+//    public static void main(String[] args) {
+//
+//        new Core().setVisible(true);
+//    }
 }

@@ -19,4 +19,15 @@ public class Customer extends Person {
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "customerId='" + customerId + '\'' +
+                " ,name = '"+getName()+'\''+
+                " ,email='"+getEmail()+'\''+
+                " ,personId='"+getPersonId()+'\''+
+                " ,dob='"+getDob()+'\''+
+                '}';
+    }
 }

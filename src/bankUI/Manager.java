@@ -5,6 +5,7 @@ import bankUI.component.LoanListPanel;
 import bankUI.component.StockListPanel;
 import bankUI.entity.Loan;
 import bankUI.entity.Stock;
+import controller.BankManagerController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Manager extends JFrame implements ActionListener {
 
@@ -25,6 +27,9 @@ public class Manager extends JFrame implements ActionListener {
     private JTextField customerID;
     private JButton search;
     private HistoryTable historyData;
+
+    //MVC
+    private BankManagerController bankManagerController = new BankManagerController();
 
     public Manager() {
 
@@ -180,6 +185,7 @@ public class Manager extends JFrame implements ActionListener {
         try {
             if (ae.getSource() == search) {
                 amountList.add(new Amount());
+                Map<String, Object> customerInfo = bankManagerController.getCustomerData(customerID.getText());
                 // -------------------------------
                 // checking
                 checking.removeAll();

@@ -11,8 +11,6 @@ public class BankConstants {
     private final int ERROR = 400;
     private final int MANAGER_LOGIN = 201;
 
-
-
     public int getSUCCESS_CODE() {
         return SUCCESS_CODE;
     }

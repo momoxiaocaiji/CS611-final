@@ -19,4 +19,11 @@ public class Account {
         this.accountNum = accountNum;
     }
 
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "accountNum='" + accountNum + '\'' +
+                '}';
+    }
 }

@@ -24,4 +24,12 @@ public class BankAndManager {
     public void setManagerId(int managerId) {
         this.managerId = managerId;
     }
+
+    @Override
+    public String toString() {
+        return "BankAndManager{" +
+                "bankId=" + bankId +
+                ", managerId=" + managerId +
+                '}';
+    }
 }

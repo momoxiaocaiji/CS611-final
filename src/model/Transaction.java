@@ -87,4 +87,18 @@ public class Transaction {
     public void setDestinationAccountId(String destinationAccountId) {
         this.destinationAccountId = destinationAccountId;
     }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId=" + transactionId +
+                ", customerId=" + customerId +
+                ", transactionType='" + transactionType + '\'' +
+                ", amount=" + amount +
+                ", currency='" + currency + '\'' +
+                ", date=" + date +
+                ", sourceAccountId='" + sourceAccountId + '\'' +
+                ", destinationAccountId='" + destinationAccountId + '\'' +
+                '}';
+    }
 }

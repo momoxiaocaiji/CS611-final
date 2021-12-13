@@ -97,4 +97,19 @@ public class Loan {
     public void setLoanApproved(boolean loanApproved) {
         isLoanApproved = loanApproved;
     }
+
+    @Override
+    public String toString() {
+        return "Loan{" +
+                "loanId=" + loanId +
+                ", customerId=" + customerId +
+                ", principalAmount=" + principalAmount +
+                ", currency='" + currency + '\'' +
+                ", tenure=" + tenure +
+                ", rateOfInterest=" + rateOfInterest +
+                ", loanCommenceDate=" + loanCommenceDate +
+                ", managerId=" + managerId +
+                ", isLoanApproved=" + isLoanApproved +
+                '}';
+    }
 }

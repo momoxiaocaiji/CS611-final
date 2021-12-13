@@ -1,12 +1,14 @@
 package bankUI;
 
+import controller.AccountController;
 import controller.LoginController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
+import java.util.*;
+import java.util.List;
 
 public class Login extends JFrame implements ActionListener {
 
@@ -17,6 +19,7 @@ public class Login extends JFrame implements ActionListener {
 
     // MVC
     private LoginController loginController = new LoginController();
+    private AccountController accountController = new AccountController();
 
     public Login(){
 
@@ -100,7 +103,8 @@ public class Login extends JFrame implements ActionListener {
                 int returnCode = loginController.signIn(usernameInput.getText(),
                         Arrays.toString(passwordField.getPassword()));
                 if(returnCode == Constant.SUCCESS_CODE){
-                    new Core().setVisible(true);
+                    List userInfo = accountController.getAccountInfoForCustomer(usernameInput.getText());
+                    new Core(userInfo, usernameInput.getText()).setVisible(true);
                     setVisible(false);
                 } else if (returnCode == Constant.MANAGER_LOGIN) {
                     new Manager().setVisible(true);

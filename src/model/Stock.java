@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class Stock {
 
+    public Stock(){}
+
     private int stockId;
     private String ticker;
     private String stockName;
@@ -56,5 +58,16 @@ public class Stock {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "stockId=" + stockId +
+                ", ticker='" + ticker + '\'' +
+                ", stockName='" + stockName + '\'' +
+                ", price=" + price +
+                ", date=" + date +
+                '}';
     }
 }

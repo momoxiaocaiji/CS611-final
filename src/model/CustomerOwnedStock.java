@@ -48,4 +48,14 @@ public class CustomerOwnedStock extends Stock{
     public void setPurchasePrice(double purchasePrice) {
         this.purchasePrice = purchasePrice;
     }
+
+    @Override
+    public String toString() {
+        return "CustomerOwnedStock{" +
+                "quantity=" + quantity +
+                ", customerId=" + customerId +
+                ", purchaseDate=" + purchaseDate +
+                ", purchasePrice=" + purchasePrice +
+                '}';
+    }
 }

@@ -40,4 +40,13 @@ public class Login {
     public void setPersonType(String personType) {
         this.personType = personType;
     }
+
+    @Override
+    public String toString() {
+        return "Login{" +
+                "password='" + password + '\'' +
+                ", userId='" + userId + '\'' +
+                ", personType='" + personType + '\'' +
+                '}';
+    }
 }

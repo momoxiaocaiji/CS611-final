@@ -46,4 +46,14 @@ public class SecuritiesAccount extends Account{
     public void setCurrency(String currency) {
         this.currency = currency;
     }
+
+    @Override
+    public String toString() {
+        return "SecuritiesAccount{" +
+                "accountId=" + accountId +
+                ", customerId=" + customerId +
+                ", investmentAmount=" + investmentAmount +
+                ", currency='" + currency + '\'' +
+                '}';
+    }
 }

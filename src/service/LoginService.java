@@ -2,8 +2,6 @@ package service;
 
 import java.sql.Date;
 import java.util.*;
-
-import bankUI.Constant;
 import controller.DbController;
 import model.BankConstants;
 import model.Customer;
@@ -139,7 +137,7 @@ public class LoginService {
         }else{
             //user already exists in db
             System.out.println("User already exists in DB.Cant create duplicate");
-            return Constant.SIGN_UP_DUPLICATE;
+            return bankConstants.getSERVER_ERROR();
         }
         return bankConstants.getERROR();
     }
@@ -180,7 +178,6 @@ public class LoginService {
         while(resultSet.next()) {
             customer = new Customer();
             customer.setCustomerId(customerId);
-
             customer.setPersonId(resultSet.getInt("personId"));
             customer.setName(resultSet.getString("name"));
             customer.setEmail(resultSet.getString("email"));
