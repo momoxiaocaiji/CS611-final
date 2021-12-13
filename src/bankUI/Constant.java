@@ -19,4 +19,10 @@ public class Constant {
     public static final int SIGN_UP_DUPLICATE = 501;
     public static final int SIGN_UP_DATABASE_ERROR = 500;
     public static final int SIGN_UP_ERROR = 400;
+
+    public static final int SUCCESS_CODE = 200;
+    public static final int NOT_FOUND = 404;
+    public static final int SERVER_ERROR = 500;
+    public static final int ERROR = 400;
+    public static final int MANAGER_LOGIN = 201;
 }

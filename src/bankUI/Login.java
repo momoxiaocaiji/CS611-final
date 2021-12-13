@@ -6,11 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class Login extends JFrame implements ActionListener {
 
-    private JLabel welcome,userID,password;
-    private JTextField userIDInput;
+    private JLabel welcome,username,password;
+    private JTextField usernameInput;
     private JPasswordField passwordField;
     private JButton signIn,clear,signUp;
 
@@ -22,13 +23,13 @@ public class Login extends JFrame implements ActionListener {
         welcome = new JLabel("WELCOME TO ATM");
         welcome.setFont(new Font("Arial", Font.BOLD, 38));
 
-        userID = new JLabel("UserID:");
-        userID.setFont(new Font("Arial", Font.BOLD, 28));
+        username = new JLabel("Username:");
+        username.setFont(new Font("Arial", Font.BOLD, 28));
 
         password = new JLabel("Password:");
         password.setFont(new Font("Arial", Font.BOLD, 28));
 
-        userIDInput = new JTextField(15);
+        usernameInput = new JTextField(15);
         passwordField = new JPasswordField(15);
 
         signIn = new JButton("SIGN IN");
@@ -47,16 +48,16 @@ public class Login extends JFrame implements ActionListener {
         welcome.setBounds(175,50,450,200);
         add(welcome);
 
-        userID.setBounds(125,150,375,200);
-        add(userID);
+        username.setBounds(125,150,375,200);
+        add(username);
 
-        userIDInput.setBounds(300,235,230,30);
-        add(userIDInput);
+        usernameInput.setBounds(300,235,230,30);
+        add(usernameInput);
 
         password.setBounds(125,225,375,200);
         add(password);
 
-        userIDInput.setFont(new Font("Arial", Font.BOLD, 14));
+        usernameInput.setFont(new Font("Arial", Font.BOLD, 14));
 
 
         passwordField.setFont(new Font("Arial", Font.BOLD, 14));
@@ -96,11 +97,12 @@ public class Login extends JFrame implements ActionListener {
         try{
 
             if(ae.getSource()==signIn){
-                // todo
-                if(!userIDInput.getText().equals("admin")){
+                int returnCode = loginController.signIn(usernameInput.getText(),
+                        Arrays.toString(passwordField.getPassword()));
+                if(returnCode == Constant.SUCCESS_CODE){
                     new Core().setVisible(true);
                     setVisible(false);
-                } else if (userIDInput.getText().equals("admin")) {
+                } else if (returnCode == Constant.MANAGER_LOGIN) {
                     new Manager().setVisible(true);
                     setVisible(false);
                 }
@@ -108,7 +110,7 @@ public class Login extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(null, "Incorrect Card Number or Password");
                 }
             }else if(ae.getSource()==clear){
-                userIDInput.setText("");
+                usernameInput.setText("");
                 passwordField.setText("");
             }else if(ae.getSource()==signUp){
                 new Registry().setVisible(true);

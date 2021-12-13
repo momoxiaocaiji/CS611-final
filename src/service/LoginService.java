@@ -1,7 +1,11 @@
 package service;
 
-import controller.AccountController;
+import java.sql.Date;
+import java.util.*;
+
+import bankUI.Constant;
 import controller.DbController;
+import model.BankConstants;
 import model.Customer;
 import model.Login;
 import java.sql.*;
@@ -11,28 +15,30 @@ public class LoginService {
 
     DbController dbController = new DbController();
 
-    AccountController accountController = new AccountController();
+    AccountService accountService = new AccountService();
 
-    public int signIn(int userId,String password) throws Exception {
+    BankConstants bankConstants = new BankConstants();
+
+    public int signIn(String userId,String password) throws Exception {
         Login userDetails = getLoginDetails(userId,password);
         if(userDetails==null){
             //no user found;
             System.out.println("No user found");
-            return 404;
+            return bankConstants.getNOT_FOUND();
         }else{
-            if(userDetails.getUserId()!=userId) {
+            if(!userDetails.getUserId().equalsIgnoreCase(userId)) {
                 //incorrect user
                 System.out.println("No user found");
-                return 404;
+                return bankConstants.getNOT_FOUND();
             }else {
                 if(userDetails.getPassword().equals(password)){
                     //successful login
                     System.out.println("Success Login");
-                    return (userDetails.getPersonType().equalsIgnoreCase("manager"))?201:200;
+                    return (userDetails.getPersonType().equalsIgnoreCase("manager"))? bankConstants.getMANAGER_LOGIN(): bankConstants.getSUCCESS_CODE();
                 }else {
                     //incorrect password
                     System.out.println("Incorrect pwd");
-                    return 400;
+                    return bankConstants.getERROR();
                 }
             }
         }
@@ -47,7 +53,7 @@ public class LoginService {
         customerToAdd.setName(customer.getName());
         customerToAdd.setDob(customer.getDob());
         customerToAdd.setEmail(customer.getEmail());
-        customerToAdd.setCustomerId(Objects.hash("CUST",customerToAdd.getPersonId()));
+        customerToAdd.setCustomerId(customer.getCustomerId());
         return customerToAdd;
     }
 
@@ -62,27 +68,27 @@ public class LoginService {
         return preparedStatement.executeUpdate();
     }
 
-    public int insertIntoCustomer(Connection connection,int customerId) throws SQLException {
+    public int insertIntoCustomer(Connection connection,String customerId) throws SQLException {
         String query = "INSERT INTO customer(customerId)"+"VALUES(?)";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1,customerId);
+        preparedStatement.setString(1,customerId);
 
         return preparedStatement.executeUpdate();
     }
 
-    public int insertIntoCustPerson(Connection connection,int personId,int customerId) throws SQLException {
+    public int insertIntoCustPerson(Connection connection,int personId,String customerId) throws SQLException {
         String query = "INSERT into cust_person(personId,customerId)"+"VALUES(?,?)";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1,personId);
-        preparedStatement.setInt(2,customerId);
+        preparedStatement.setString(2,customerId);
 
         return preparedStatement.executeUpdate();
     }
 
-    public int insertIntoLoginDetails(Connection connection,int custId,String pwd) throws SQLException {
+    public int insertIntoLoginDetails(Connection connection,String custId,String pwd) throws SQLException {
         String query = "INSERT into login_details(userId,pwd,personType)"+"VALUES(?,?,?)";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1,custId);
+        preparedStatement.setString(1,custId);
         preparedStatement.setString(2,pwd);
         preparedStatement.setString(3,"CUSTOMER");
 
@@ -122,20 +128,20 @@ public class LoginService {
                     //successfully inserted customer
                     System.out.println("Sign Up successful");
                     //create new account
-                    accountController.createNewAccountForCustomer(customerToAdd);
-                    return 200;
+                    accountService.createNewAccountForCustomer(customerToAdd);
+                    return bankConstants.getSUCCESS_CODE();
                 }
             }else {
                 //error inserting
                 System.out.println("Error signing up");
-                return 500;
+                return bankConstants.getSERVER_ERROR();
             }
         }else{
             //user already exists in db
             System.out.println("User already exists in DB.Cant create duplicate");
-            return 501;
+            return Constant.SIGN_UP_DUPLICATE;
         }
-        return 400;
+        return bankConstants.getERROR();
     }
 
 
@@ -147,21 +153,56 @@ public class LoginService {
         return Objects.hash(stringBuilder.toString());
     }
 
-    public Login getLoginDetails(int userId, String password) throws Exception {
+    public Login getLoginDetails(String userId, String password) throws Exception {
         Connection connection = dbController.connectToDb();
-        String query = "select distinct * from login_details where userId="+userId+";";
+        String query = "select distinct * from login_details where userId='"+userId+"';";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         if(resultSet==null || !resultSet.next()) {
             System.out.println("No user found");
             return null;
         }else {
-            int id = resultSet.getInt("userId");
+            String id = resultSet.getString("userId");
             String pwd = resultSet.getString("pwd");
             String personType = resultSet.getString("personType");
             System.out.println(id+" "+pwd);
             return new Login(id,pwd,personType);
         }
+    }
+
+    public Customer getCustomerDetails(String customerId) throws Exception {
+        Connection connection = dbController.connectToDb();
+        String query = "select customer.customerId,cust_person.personId,name,email,dob from customer,cust_person,person where customer.customerId = cust_person.customerId and person.personId = cust_person.personId and customer.customerId = '"+customerId+"';";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        Customer customer = null;
+        while(resultSet.next()) {
+            customer = new Customer();
+            customer.setCustomerId(customerId);
+
+            customer.setPersonId(resultSet.getInt("personId"));
+            customer.setName(resultSet.getString("name"));
+            customer.setEmail(resultSet.getString("email"));
+            customer.setDob(resultSet.getDate("dob"));
+        }
+
+        return customer;
+    }
+
+    public Map<String,Integer> getPersonIdMap(String userId) throws Exception {
+        Map<String,Integer> map = new HashMap<>();
+        String query = "select * from cust_person where customerId='"+userId+"';";
+        Connection connection = dbController.connectToDb();
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery(query);
+
+        while (rs.next()){
+            map.put(rs.getString("customerId"),rs.getInt("personId"));
+        }
+
+        return map;
+
     }
 
 

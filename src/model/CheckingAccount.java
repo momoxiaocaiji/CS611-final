@@ -1,20 +1,25 @@
 package model;
 
+import java.util.*;
+
 public class CheckingAccount extends Account{
 
     private String accountId;
     private int pin;
     private double amount;
     private String currency;
-    private int customerId;
+    private String customerId;
+    private Map<String,Double> money;
 
-    public CheckingAccount(String accountNum, String accountId, int pin, double amount, String currency, int customerId) {
+    public CheckingAccount(String accountNum, String accountId, int pin, double amount, String currency, String customerId) {
         super(accountNum);
         this.accountId = accountId;
         this.pin = pin;
         this.amount = amount;
         this.currency = currency;
         this.customerId = customerId;
+        money = new HashMap<>();
+        money.put(currency,amount);
     }
 
     public CheckingAccount() {
@@ -53,24 +58,31 @@ public class CheckingAccount extends Account{
         this.currency = currency;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
+    public Map<String, Double> getMoney() {
+        return money;
+    }
+
+    public void setMoney(Map<String, Double> money) {
+        this.money = money;
+    }
 
     @Override
     public String toString() {
         return "CheckingAccount{" +
                 "accountId='" + accountId + '\'' +
-                "accountNum='"+getAccountNum()+'\''+
                 ", pin=" + pin +
                 ", amount=" + amount +
                 ", currency='" + currency + '\'' +
-                ", customerId=" + customerId +
+                ", customerId='" + customerId + '\'' +
+                ", money=" + money +
                 '}';
     }
 }

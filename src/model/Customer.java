@@ -1,9 +1,9 @@
 package model;
 
 public class Customer extends Person {
-    private int customerId;
+    private String customerId;
 
-    public Customer(String name, int personId, int customerId) {
+    public Customer(String name, int personId, String customerId) {
         super(name, personId);
         this.customerId = customerId;
     }
@@ -12,11 +12,11 @@ public class Customer extends Person {
         super();
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 }

@@ -208,26 +208,22 @@ public class Registry extends JFrame implements ActionListener {
                 }
 
                 // create new customer
-                Customer customer = new Customer();
-                customer.setName(realNameInput.getText());
-                customer.setEmail(emailInput.getText());
                 Date date = Date.valueOf(c3.getSelectedItem().toString() + "-" +
                         months.get(c2.getSelectedItem().toString()) + "-" +
                         c1.getSelectedItem().toString());
-                customer.setDob(date);
 
-                customer.setPersonId(Objects.hash(customer.getName() + customer.getEmail() + customer.getDob()));
-                customer.setCustomerId(Objects.hash("CUST", customer.getPersonId()));
+                int returnCode = loginController.signUpCustomer(usernameInput.getText(),
+                        realNameInput.getText(),
+                        emailInput.getText(), date,
+                        Arrays.toString(passwordField.getPassword()));
 
-                int returnCode = loginController.signUpCustomer(customer, Arrays.toString(passwordField.getPassword()));
-
-                if (returnCode == Constant.SIGN_UP_OK) {
+                if (returnCode == Constant.SUCCESS_CODE) {
                     JOptionPane.showMessageDialog(null, "Registration Success!!!");
                     new Login().setVisible(true);
                     setVisible(false);
                 } else if (returnCode == Constant.SIGN_UP_DUPLICATE) {
                     JOptionPane.showMessageDialog(null, "Username repeat!!!");
-                } else if (returnCode == Constant.SIGN_UP_DATABASE_ERROR || returnCode == Constant.SIGN_UP_ERROR) {
+                } else if (returnCode == Constant.SERVER_ERROR || returnCode == Constant.ERROR) {
                     JOptionPane.showMessageDialog(null, "Something wrong! Please try again!");
                 }
 

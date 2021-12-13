@@ -4,14 +4,14 @@ import com.mysql.cj.log.Log;
 
 public class Login {
     private String password;
-    private int userId;
+    private String userId;
     private String personType;
 
     public Login(){
         //does nothing
     }
 
-    public Login(int userId,String password, String personType) {
+    public Login(String userId,String password, String personType) {
         this.password = password;
         this.userId = userId;
         this.personType = personType;
@@ -25,11 +25,11 @@ public class Login {
         this.password = password;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
