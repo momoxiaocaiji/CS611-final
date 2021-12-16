@@ -5,6 +5,7 @@ import model.BankConstants;
 import model.CheckingAccount;
 import model.Customer;
 import model.SavingAccount;
+import model.SecuritiesAccount;
 
 import java.sql.*;
 import java.util.*;
@@ -207,5 +208,72 @@ public class AccountService {
 
         return accounts;
 
+    }
+
+    //create Securities account
+    public int createNewSecuritiesAccount (Customer customer, double depositAmount, double savingAmount) throws Exception, SQLException{
+    	int responseStatus = 0;
+    	Connection connection = dbController.connectToDb();
+    	//check whether the account already exist
+    	boolean accountExists = doesSecuritiesAccountExist(connection,customer);
+    	//check prerequisites of creating a SecuritiesAccount
+        if(!accountExists && savingAmount>=5000 && savingAmount-depositAmount>=2500){
+            //insert into account
+        	Statement statement = connection.createStatement();
+        	//generate the unique hash code
+        	int accountId = Objects.hash("SECURITIES",customer.getPersonId());
+            int rowCount = statement.executeUpdate("INSERT INTO securities_account (`accountId`, `customerId`, `investmentAmount`) "
+            		+ "VALUES ("+accountId+","+customer.getCustomerId()+","+depositAmount+");");
+            if(rowCount!=0) {
+                //successfully created saving account
+
+                responseStatus = bankConstants.getSUCCESS_CODE();
+            }else {
+                responseStatus = bankConstants.getERROR();
+            }
+        }else {
+        	// TODO accountExists, or deposit amount illegal
+            responseStatus = bankConstants.getSERVER_ERROR();
+        }
+    	return responseStatus;
+    }
+    //return the SecuritiesAccount of this customer
+    public Object getSecuritiesInfo(Customer customer) throws Exception {
+    	//connection with DB
+    	Connection connection = dbController.connectToDb();
+    	//temp securitiesAccount
+    	SecuritiesAccount securitiesAccount = new SecuritiesAccount();
+    	//check whether the SecuritiesAccount of this customer exist or not
+        boolean securitiesExists = doesSecuritiesAccountExist(connection,customer);
+        if(securitiesExists) {
+        	//SQL query to get customer's security account by customerID
+            String query = "SELECT * from securities_account where customerId="+customer.getCustomerId()+" and accountId="+customer.getPersonId()+";";
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            resultSet.next();
+        	//set values to 'securitiesAccount'
+            securitiesAccount.setAccountId(resultSet.getString("accountId"));
+        	securitiesAccount.setCustomerId(resultSet.getString("customerId"));
+        	securitiesAccount.setInvestmentAmount(resultSet.getDouble("investmentAmount"));
+        }
+        else {
+        	//account does not exist!
+        	//TODO alert message
+        }
+    	//return
+    	return securitiesAccount;
+    }
+
+    //check doesSecuritiesAccountExist with customerId and accountId
+    public Boolean doesSecuritiesAccountExist(Connection connection, Customer customer) throws SQLException{
+        int accountId = Objects.hash("CHECK",customer.getPersonId());
+        String query = "select * from securities_account where customerId="+customer.getPersonId()+" and accountId="+accountId;
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        if(resultSet==null || !resultSet.next())
+            return false; //account doesnt exist
+
+        return true;
     }
 }

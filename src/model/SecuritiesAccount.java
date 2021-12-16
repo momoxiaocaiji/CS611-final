@@ -2,11 +2,12 @@ package model;
 
 public class SecuritiesAccount extends Account{
 
-    private int accountId;
-    private int customerId;
+    private String accountId;
+    private String customerId;
     private double investmentAmount;
     private String currency="USD"; //keeping currency in USD by default
 
+    /*
     public SecuritiesAccount(String accountNum, int accountId, int customerId, double investmentAmount, String currency) {
         super(accountNum);
         this.accountId = accountId;
@@ -14,20 +15,32 @@ public class SecuritiesAccount extends Account{
         this.investmentAmount = investmentAmount;
         this.currency = currency;
     }
+    */
 
-    public int getAccountId() {
+    public SecuritiesAccount(String accountId, String customerId, double investmentAmount) {
+    	super();
+        this.accountId = accountId;
+        this.customerId = customerId;
+        this.investmentAmount = investmentAmount;
+    }
+    //Overloaded constructor in case of no parameter
+    public SecuritiesAccount() {
+    	super();
+    }
+
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
@@ -38,22 +51,9 @@ public class SecuritiesAccount extends Account{
     public void setInvestmentAmount(double investmentAmount) {
         this.investmentAmount = investmentAmount;
     }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
+    
     @Override
     public String toString() {
-        return "SecuritiesAccount{" +
-                "accountId=" + accountId +
-                ", customerId=" + customerId +
-                ", investmentAmount=" + investmentAmount +
-                ", currency='" + currency + '\'' +
-                '}';
+        return "customer: "+customerId+"accountID: "+accountId+"amount: "+investmentAmount;
     }
 }

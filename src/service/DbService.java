@@ -14,7 +14,7 @@ public class DbService {
     public Connection connectToDb() throws Exception {
         System.out.println("Connecting to DB");
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection(bankConstants.getDBURL(), bankConstants.getDBUSERNAME(), bankConstants.getDBPWD());
             System.out.println("Connected Succesfully");
             return conn;
