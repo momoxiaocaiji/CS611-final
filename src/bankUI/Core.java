@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,6 +63,7 @@ public class Core extends JFrame implements ActionListener {
     private AccountController accountController = new AccountController();
     private LoanController loanController = new LoanController();
     private TransactionController transactionController = new TransactionController();
+    private StockController stockController = new StockController();
 
     public Core(List userInfo, String username) throws Exception {
         //amountList.add(new Amount());
@@ -288,13 +290,13 @@ public class Core extends JFrame implements ActionListener {
         saving.revalidate();
     }
 
-    public void fillStock(SecuritiesAccount securitiesAccount) {
+    public void fillStock(SecuritiesAccount securitiesAccount) throws SQLException, Exception {
         JPanel securitiesAccountPanel = new JPanel();
         stock.add(securitiesAccountPanel, BorderLayout.NORTH);
         securitiesAccountPanel.setBackground(Color.white);
         securitiesAccountPanel.setPreferredSize(new Dimension(0, 120));
         securitiesAccountPanel.setLayout(new GridLayout(3, 2));
-        JLabel amount = new JLabel("Amount: ");
+        JLabel amount = new JLabel("Banlance Amount: ");
         amount.setFont(new Font("Andale Mono", Font.BOLD, 16));
         amountNum = new JLabel(String.valueOf(securitiesAccount.getInvestmentAmount()));
         amountNum.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -303,6 +305,7 @@ public class Core extends JFrame implements ActionListener {
 
         JLabel realized = new JLabel("Realized Profit: ");
         realized.setFont(new Font("Andale Mono", Font.BOLD, 16));
+        //TODO getRealized profit
         realizedNum = new JLabel("$20.0");
         realizedNum.setFont(new Font("Arial", Font.PLAIN, 16));
         securitiesAccountPanel.add(realized);
@@ -310,6 +313,7 @@ public class Core extends JFrame implements ActionListener {
 
         JLabel unrealized = new JLabel("Unrealized Profit: ");
         unrealized.setFont(new Font("Andale Mono", Font.BOLD, 16));
+        //TODO getUnrealized profit
         unrealizedNum = new JLabel("$20.0");
         unrealizedNum.setFont(new Font("Arial", Font.PLAIN, 16));
         securitiesAccountPanel.add(unrealized);
@@ -325,21 +329,29 @@ public class Core extends JFrame implements ActionListener {
 
         buyStock.setLayout(new BorderLayout());
         List<Stock> stockList = new ArrayList<>();
-        stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
-        stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
-        StockListPanel buyList = new StockListPanel(stockList, Constant.STOCK_CUSTOMER_BUY);
+        //TODO where to call createStock, how to combine with date
+        stockController.createStock("AAA", "A1234", 1000, 15, 7, 9, null);
+        stockController.createStock("BBB", "B1234", 600, 40, 30, 30, null);
+        for(model.Stock s : stockController.getStockArrayList()) {
+        	//let Stock.name = model.Stock.ticker
+        	stockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
+        }
+        //what if arrayList size >3?
+        StockListPanel buyList = new StockListPanel(stockList, Constant.STOCK_CUSTOMER_BUY, securitiesAccount);
         buyList.setPreferredSize(new Dimension(750, 650));
         buyStock.add(buyList, BorderLayout.CENTER);
         buyStock.add(new JButton("Buy via Stock Code"), BorderLayout.SOUTH);
         buyList.setAssoFrame(this);
 
+        // TODO update data display on sell
         stockList.get(0).setCost(9.0);
         stockList.get(0).setNum(100);
         stockList.get(1).setCost(8.0);
         stockList.get(1).setNum(200);
-        StockListPanel saleList = new StockListPanel(stockList, Constant.STOCK_CUSTOMER_SALE);
+        StockListPanel saleList = new StockListPanel(stockList, Constant.STOCK_CUSTOMER_SALE, securitiesAccount);
         saleList.setPreferredSize(new Dimension(750, 650));
         saleStock.add(saleList);
+        saleList.setAssoFrame(this);
     }
 
 //    public static void main(String[] args) {

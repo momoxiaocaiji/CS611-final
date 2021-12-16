@@ -277,7 +277,7 @@ public class AccountService {
         boolean securitiesExists = doesSecuritiesAccountExist(connection,customer);
         if(securitiesExists) {
         	//SQL query to get customer's security account by customerID
-            String query = "SELECT * from securities_account where customerId='"+customer.getCustomerId()+"' and accountId="+customer.getPersonId()+";";
+            String query = "SELECT * from securities_account where customerId='"+customer.getCustomerId()+"' and accountId="+Objects.hash("SECURITIES",customer.getPersonId())+";";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
             resultSet.next();
@@ -288,7 +288,7 @@ public class AccountService {
         }
         else {
         	//account does not exist!
-        	//TODO alert message
+        	return null;
         }
     	//return
     	return securitiesAccount;
@@ -296,8 +296,8 @@ public class AccountService {
 
     //check doesSecuritiesAccountExist with customerId and accountId
     public Boolean doesSecuritiesAccountExist(Connection connection, Customer customer) throws SQLException{
-        int accountId = Objects.hash("CHECK",customer.getPersonId());
-        String query = "select * from securities_account where customerId='"+customer.getPersonId()+"' and accountId="+accountId;
+        int accountId = Objects.hash("SECURITIES",customer.getPersonId());
+        String query = "select * from securities_account where customerId='"+customer.getCustomerId()+"' and accountId="+accountId;
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
 
