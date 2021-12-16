@@ -216,6 +216,20 @@ public class Core extends JFrame implements ActionListener {
         });
         filterPanel.add(filterText);
         filterPanel.add(button);
+
+        // refresh
+        JButton refresh = new JButton("refresh");
+        refresh.setFont(new Font("Raleway", Font.BOLD, 14));
+        refresh.addActionListener(e -> {
+            try {
+                historyData.resetData(transactionController.getDailyReport(new java.sql.Date(new java.util.Date().getTime()).toString()));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            historyData.revalidate();
+        });
+        button.setFont(new Font("Raleway", Font.BOLD, 14));
+        filterPanel.add(refresh);
         // -----------------------------------------
 
         //

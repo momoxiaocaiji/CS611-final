@@ -22,6 +22,18 @@ public class BankConstants {
 
     private final double TRANSACTION_CHARGE_RATE = 1;
 
+    private final int INSUFFICIENT_FUNDS = 800;
+
+    private final int DEFAULT_BANKID = 1;
+
+    public int getDEFAULT_BANKID() {
+        return DEFAULT_BANKID;
+    }
+
+    public int getINSUFFICIENT_FUNDS() {
+        return INSUFFICIENT_FUNDS;
+    }
+
     public double getTRANSACTION_CHARGE_RATE() {
         return TRANSACTION_CHARGE_RATE;
     }

@@ -163,12 +163,16 @@ public class AccountService {
     public List<Object> getAccountInfoForCustomer(Customer customer) throws Exception {
         Connection connection = dbController.connectToDb();
         List<Object> accounts = new ArrayList<>();
-//        CheckingAccount checkingAccount = new CheckingAccount();
-//        SavingAccount savingAccount = new SavingAccount();
+        CheckingAccount checkingAccount = new CheckingAccount();
+        SavingAccount savingAccount = new SavingAccount();
         //1.get checking account
         boolean checkingExists = doesCheckingAccountExist(connection,customer);
+        boolean savingExists = doesSavingAccountExist(connection,customer);
+
+        if(!checkingExists && !savingExists)
+            return new ArrayList<>();
+
         if(checkingExists) {
-            CheckingAccount checkingAccount = new CheckingAccount();
             String query = "SELECT * from checking_account where customerId='"+customer.getCustomerId()+"' and accountNum="+customer.getPersonId()+";";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
@@ -182,15 +186,10 @@ public class AccountService {
                 Map<String,Double> map = new HashMap<>();
                 map.put(checkingAccount.getCurrency(),checkingAccount.getAmount());
                 checkingAccount.setMoney(map);
-
             }
-            accounts.add(checkingAccount);
         }
 
-        //2.get savings account
-        boolean savingExists = doesSavingAccountExist(connection,customer);
         if(savingExists) {
-            SavingAccount savingAccount = new SavingAccount();
             String query = "SELECT * from saving_account where customerId='"+customer.getCustomerId()+"' and accountNum="+customer.getPersonId()+";";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
@@ -205,11 +204,10 @@ public class AccountService {
                 map.put(savingAccount.getCurrency(),savingAccount.getAmount());
                 savingAccount.setMoney(map);
             }
-            accounts.add(savingAccount);
         }
 
-
-
+        accounts.add(checkingAccount);
+        accounts.add(savingAccount);
 
         return accounts;
 

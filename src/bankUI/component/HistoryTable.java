@@ -59,6 +59,27 @@ public class HistoryTable extends JTable {
         return tip;
     }
 
+    public void resetData(List<Transaction> transactionList) {
+        data = new String[transactionList.size()][6];
+        for (int i = 0 ; i < transactionList.size() ; i ++) {
+            data[i][0] = transactionList.get(i).getTransactionType();
+            data[i][1] = transactionList.get(i).getSourceAccountId();
+            data[i][2] = transactionList.get(i).getCurrency();
+            data[i][3] = String.valueOf(transactionList.get(i).getAmount());
+            data[i][4] = transactionList.get(i).getDestinationAccountId();
+            data[i][5] = transactionList.get(i).getDate().toString();
+        }
+        TableModel dataModel = new AbstractTableModel() {
+            public String getColumnName(int column) { return columns[column].toString(); }
+            public int getRowCount() { return data.length; }
+            public int getColumnCount() { return columns.length; }
+            public Object getValueAt(int row, int col) { return data[row][col]; }
+        };
+
+        setModel(dataModel);
+        resetTable(this);
+    }
+
     private void resetTable(JTable table){
 
         // sorter

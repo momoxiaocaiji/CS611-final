@@ -124,11 +124,13 @@ public class TransactionDetail extends JFrame implements ActionListener {
         jCenter.add(cType);
 
         if (type != Constant.TRANSACTION_LOAN){
-            balance.setBounds(130, 180, 200,30);
-            jCenter.add(balance);
+            if (type != Constant.TRANSACTION_DEPOSIT) {
+                balance.setBounds(130, 180, 200,30);
+                jCenter.add(balance);
 
-            balanceNum.setBounds(350, 180, 200,30);
-            jCenter.add(balanceNum);
+                balanceNum.setBounds(350, 180, 200,30);
+                jCenter.add(balanceNum);
+            }
         } else {
             interest.setBounds(130, 180, 200,30);
             jCenter.add(interest);

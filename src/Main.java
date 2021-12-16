@@ -8,4 +8,5 @@ public class Main {
     // 1. fee
     // 2. interest rate
     // 3. transfer to self, increase, not charge fee
+    // 4. getOwnHistory
 }
