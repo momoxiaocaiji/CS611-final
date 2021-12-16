@@ -6,6 +6,7 @@ import model.Loan;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,29 +51,36 @@ public class LoanListPanel extends JPanel {
             JPanel detail = new JPanel();
 
             detail.setBackground(Color.white);
-            detail.setLayout(new GridLayout(3, 2));
+            detail.setLayout(new GridLayout(4, 2));
             loanP.add(detail,BorderLayout.CENTER);
 
             JLabel a = new JLabel("Amount: ");
-            a.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
+            a.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 16));
             JLabel aNum = new JLabel(String.valueOf(l.getPrincipalAmount()));
-            aNum.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
+            aNum.setFont(new Font("Arial", Font.PLAIN, 16));
             detail.add(a);
             detail.add(aNum);
 
             JLabel t = new JLabel("Type: ");
-            t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
+            t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 16));
             JLabel tT = new JLabel(l.getCurrency());
-            tT.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
+            tT.setFont(new Font("Arial", Font.PLAIN, 16));
             detail.add(t);
             detail.add(tT);
 
-            JLabel i = new JLabel("Interest: ");
-            i.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
-            JLabel iNum = new JLabel(String.valueOf(l.getRateOfInterest()));
-            iNum.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
+            JLabel i = new JLabel("Rate of Interest: ");
+            i.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 16));
+            JLabel iNum = new JLabel(new BigDecimal(String.valueOf(l.getRateOfInterest())).toPlainString());
+            iNum.setFont(new Font("Arial", Font.PLAIN, 16));
             detail.add(i);
             detail.add(iNum);
+
+            JLabel d = new JLabel("Commence Date: ");
+            d.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 16));
+            JLabel dDetail = new JLabel(l.getLoanCommenceDate().toString());
+            dDetail.setFont(new Font("Arial", Font.PLAIN, 16));
+            detail.add(d);
+            detail.add(dDetail);
 
             if (type != Constant.LOAN_LIST){
                 JButton op = new JButton();

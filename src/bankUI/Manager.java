@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 
 public class Manager extends JFrame implements ActionListener {
 
-    private static List<Amount> amountList = new ArrayList<>();
-
     private JTabbedPane outerMenu, checkMenu;
     private JPanel check, report, stock, loanRequest, profit;
     private JPanel checking, saving;
@@ -37,9 +35,6 @@ public class Manager extends JFrame implements ActionListener {
     private LoanController loanController = new LoanController();
 
     public Manager() throws Exception {
-
-        amountList.add(new Amount());
-        amountList.add(new Amount());
 
         // check
         check = new JPanel();
