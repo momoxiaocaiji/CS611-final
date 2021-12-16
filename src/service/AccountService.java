@@ -281,4 +281,44 @@ public class AccountService {
 
         return true;
     }
+
+
+    //get account based on accountId
+    public Object getAccountBasedOnId(Connection connection,String accountId) throws Exception {
+        CheckingAccount checkingAccount = new CheckingAccount();
+        SavingAccount savingAccount = new SavingAccount();
+
+        //check for checking
+        String query1 = "select * from checking_account where accountId='"+accountId+"';";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query1);
+        if(resultSet.next()) {
+
+                checkingAccount.setAccountId(accountId);
+                checkingAccount.setAccountNum(String.valueOf(resultSet.getInt("accountNum")));
+                checkingAccount.setCustomerId(resultSet.getString("customerId"));
+                checkingAccount.setPin(resultSet.getInt("pin"));
+                checkingAccount.setCurrency(resultSet.getString("currency"));
+                checkingAccount.setAmount(resultSet.getDouble("amount"));
+
+                return checkingAccount;
+        }else {
+            String query2 = "select * from saving_account where accountId='"+accountId+"';";
+            Statement statement1 = connection.createStatement();
+            ResultSet resultSet1 = statement1.executeQuery(query2);
+            if(resultSet1.next()) {
+                    savingAccount.setAccountId(accountId);
+                    savingAccount.setAccountNum(String.valueOf(resultSet1.getInt("accountNum")));
+                    savingAccount.setCustomerId(resultSet1.getString("customerId"));
+                    savingAccount.setPin(resultSet1.getInt("pin"));
+                    savingAccount.setCurrency(resultSet1.getString("currency"));
+                    savingAccount.setAmount(resultSet1.getDouble("amount"));
+
+                    return savingAccount;
+                }
+            else{
+                return new Object();
+            }
+        }
+    }
 }

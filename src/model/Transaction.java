@@ -5,7 +5,7 @@ import java.util.Date;
 public class Transaction {
 
     private int transactionId;
-    private int customerId;
+    private String customerId;
     private String transactionType;
     private double amount;
     private String currency;
@@ -13,7 +13,7 @@ public class Transaction {
     private String sourceAccountId;
     private String destinationAccountId;
 
-    public Transaction(int transactionId, int customerId, String transactionType, double amount, String currency, Date date, String sourceAccountId, String destinationAccountId) {
+    public Transaction(int transactionId, String customerId, String transactionType, double amount, String currency, Date date, String sourceAccountId, String destinationAccountId) {
         this.transactionId = transactionId;
         this.customerId = customerId;
         this.transactionType = transactionType;
@@ -24,6 +24,10 @@ public class Transaction {
         this.destinationAccountId = destinationAccountId;
     }
 
+    public Transaction() {
+
+    }
+
     public int getTransactionId() {
         return transactionId;
     }
@@ -32,11 +36,11 @@ public class Transaction {
         this.transactionId = transactionId;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 

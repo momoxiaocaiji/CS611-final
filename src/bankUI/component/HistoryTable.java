@@ -1,19 +1,37 @@
 package bankUI.component;
 
+import model.Transaction;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.util.List;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 
 public class HistoryTable extends JTable {
     private TableRowSorter<TableModel> sorter;
-    static String column[] = {"TYPE", "SENDER", "CTYPE", "AMOUNT", "RECEIVER", "DATE"};
-    static String data[][] = {{"Deposit", "", "USD", "1000.0", "12345", new Date().toString()},
-            {"Withdrawal", "12345", "CYN", "1200.0", "", new Date().toString()},
-            {"Transfer", "12345", "HKD", "1300.0", "23456", new Date().toString()}};
-    public HistoryTable(){
-        super(data, column);
+    private static String[] columns = {"TYPE", "SENDER", "CTYPE", "AMOUNT", "RECEIVER", "DATE"};
+    private String[][] data;
+    public HistoryTable(List<Transaction> transactionList){
+        data = new String[transactionList.size()][6];
+        for (int i = 0 ; i < transactionList.size() ; i ++) {
+            data[i][0] = transactionList.get(i).getTransactionType();
+            data[i][1] = transactionList.get(i).getSourceAccountId();
+            data[i][2] = transactionList.get(i).getCurrency();
+            data[i][3] = String.valueOf(transactionList.get(i).getAmount());
+            data[i][4] = transactionList.get(i).getDestinationAccountId();
+            data[i][5] = transactionList.get(i).getDate().toString();
+        }
+
+        TableModel dataModel = new AbstractTableModel() {
+            public String getColumnName(int column) { return columns[column].toString(); }
+            public int getRowCount() { return data.length; }
+            public int getColumnCount() { return columns.length; }
+            public Object getValueAt(int row, int col) { return data[row][col]; }
+        };
+
+        setModel(dataModel);
         resetTable(this);
     }
 
@@ -29,7 +47,7 @@ public class HistoryTable extends JTable {
         int colIndex = columnAtPoint(p);
         int realColumnIndex = convertColumnIndexToModel(colIndex);
 
-        if (realColumnIndex == column.length - 1) { //Sport column
+        if (realColumnIndex == columns.length - 1) { //Sport column
             tip = "The date of this transaction is "
                     + getValueAt(rowIndex, colIndex);
         } else { //another column
@@ -68,7 +86,7 @@ public class HistoryTable extends JTable {
             }
         };
         for (int i = 0; i < table.getColumnCount(); i++) {
-            table.getColumn(column[i]).setCellRenderer(renderer);
+            table.getColumn(columns[i]).setCellRenderer(renderer);
             TableColumn tableColumn = table.getColumnModel().getColumn(i);
             if(i == 0 || i == 2 || i == 3) {
                 tableColumn.setPreferredWidth(20);

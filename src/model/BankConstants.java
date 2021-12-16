@@ -20,6 +20,12 @@ public class BankConstants {
 
     private final int APPROVE_LOAN_CODE = 1;
 
+    private final double TRANSACTION_CHARGE_RATE = 1;
+
+    public double getTRANSACTION_CHARGE_RATE() {
+        return TRANSACTION_CHARGE_RATE;
+    }
+
     public int getREJECT_LOAN_CODE() {
         return REJECT_LOAN_CODE;
     }

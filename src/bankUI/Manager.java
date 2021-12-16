@@ -6,6 +6,7 @@ import bankUI.component.StockListPanel;
 import bankUI.entity.Stock;
 import controller.BankManagerController;
 import controller.LoanController;
+import controller.TransactionController;
 import model.CheckingAccount;
 import model.Loan;
 import model.SavingAccount;
@@ -15,6 +16,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ public class Manager extends JFrame implements ActionListener {
     //MVC
     private BankManagerController bankManagerController = new BankManagerController();
     private LoanController loanController = new LoanController();
+    private TransactionController transactionController = new TransactionController();
 
     public Manager() throws Exception {
 
@@ -84,8 +87,7 @@ public class Manager extends JFrame implements ActionListener {
 
         // report
         report = new JPanel();
-
-        historyData = new HistoryTable();
+        historyData = new HistoryTable(transactionController.getDailyReport(new Date(new java.util.Date().getTime()).toString()));
         report.setLayout(new BorderLayout());
         report.add(new JScrollPane(historyData), BorderLayout.CENTER);
 

@@ -5,16 +5,12 @@ import bankUI.component.StockListPanel;
 import bankUI.entity.Stock;
 import controller.AccountController;
 import controller.LoanController;
+import controller.TransactionController;
 import model.CheckingAccount;
 import model.Loan;
 import model.SavingAccount;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,8 +58,9 @@ public class Core extends JFrame implements ActionListener {
     // MVC
     private AccountController accountController = new AccountController();
     private LoanController loanController = new LoanController();
+    private TransactionController transactionController = new TransactionController();
 
-    public Core(List userInfo, String username) {
+    public Core(List userInfo, String username) throws Exception {
         //amountList.add(new Amount());
         //amountList.add(new Amount());
         userAccountInfo = userInfo;
@@ -199,7 +196,7 @@ public class Core extends JFrame implements ActionListener {
         // -----------------------------------------
         // History
 
-        historyData = new HistoryTable();
+        historyData = new HistoryTable(transactionController.getDailyReport(new java.sql.Date(new java.util.Date().getTime()).toString()));
         history = new JPanel();
         history.setLayout(new BorderLayout());
         history.add(new JScrollPane(historyData), BorderLayout.CENTER);
@@ -250,7 +247,9 @@ public class Core extends JFrame implements ActionListener {
             } else if (ae.getSource() == withdrawal) {
                 new TransactionDetail(Constant.TRANSACTION_WITHDRAWAL).setVisible(true);
             } else if (ae.getSource() == transfer) {
-                new TransactionDetail(Constant.TRANSACTION_TRANSFER).setVisible(true);
+                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_TRANSFER);
+                td.setVisible(true);
+                td.setUsername(username);
             } else if (ae.getSource() == loan) {
                 List<Loan> loanList = loanController.getLoansForCustomer(username).
                         stream().filter(loan -> loan.getIsLoanApproved() == 1).collect(Collectors.toList());

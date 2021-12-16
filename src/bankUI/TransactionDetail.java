@@ -2,6 +2,7 @@ package bankUI;
 
 
 import controller.LoanController;
+import controller.TransactionController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,30 +18,33 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
     private static Map<String, Double> cun;
 
-    // 演示布局的相关按钮
-    JLabel senderLabel = new JLabel("Sender Account：");
+    private JLabel senderLabel = new JLabel("Sender Account：");
 
-    JTextField senderAccount = new JTextField(20);
+    private JTextField senderAccount = new JTextField(20);
 
-    JLabel currencyType = new JLabel("Type:");
+    private JLabel currencyType = new JLabel("Type:");
 
-    JComboBox<String> cType;
+    private JComboBox<String> cType;
 
-    JLabel balance = new JLabel("Balance：");
+    private JLabel balance = new JLabel("Balance：");
 
-    JLabel balanceNum = new JLabel("");
+    private JLabel balanceNum = new JLabel("");
 
-    JLabel interest = new JLabel("InterestRate：");
+    private JLabel interest = new JLabel("InterestRate：");
 
-    JLabel iRate = new JLabel("0.1% / per day");
+    private JLabel iRate = new JLabel("0.1% / per day");
 
-    JLabel amount = new JLabel("Amount: ");
+    private JLabel amount = new JLabel("Amount: ");
 
     private JTextField amountNum = new JTextField(20);
 
     private JLabel receiverLabel = new JLabel("Receiver Account：");
 
     private JTextField receiverAccount = new JTextField(20);
+
+    private JLabel pin = new JLabel("Pin: ");
+
+    private JPasswordField pinInput = new JPasswordField(20);
 
     private JButton execute = new JButton("execute");
 
@@ -56,6 +61,7 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
     // MVC
     private LoanController loanController = new LoanController();
+    private TransactionController transactionController = new TransactionController();
 
     public TransactionDetail(int type) {
         this.type = type;
@@ -66,6 +72,8 @@ public class TransactionDetail extends JFrame implements ActionListener {
         cun.put("USD", 1000.0);
         cun.put("CNY", 1000.0);
         cun.put("HKD", 1000.0);
+
+        // -------------------
 
         setLayout(new BorderLayout());
 
@@ -91,56 +99,67 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
         receiverLabel.setFont(new Font("Raleway", Font.BOLD, 20));
 
+        pin.setFont(new Font("Raleway", Font.BOLD, 20));
+
+        pinInput.setFont(new Font("Raleway", Font.BOLD, 20));
+
         jCenter.setLayout(null);
 
         if (type == Constant.TRANSACTION_WITHDRAWAL || type == Constant.TRANSACTION_TRANSFER) {
-            senderLabel.setBounds(130, 80, 200, 30);
+            senderLabel.setBounds(130, 60, 200, 30);
             jCenter.add(senderLabel);
 
-            senderAccount.setBounds(350, 80, 400, 30);
+            senderAccount.setBounds(350, 60, 400, 30);
             senderAccount.setBorder(BorderFactory.createEtchedBorder());
             jCenter.add(senderAccount);
         }
 
-        currencyType.setBounds(130, 150, 200,  30);
+        currencyType.setBounds(130, 120, 200,  30);
         jCenter.add(currencyType);
 
         cType = new JComboBox<>(cun.keySet().toArray(new String[0]));
-        cType.setBounds(350, 150, 150, 30);
+        cType.setBounds(350, 120, 150, 30);
         cType.addActionListener(this);
         cType.setSelectedIndex(0);
         jCenter.add(cType);
 
         if (type != Constant.TRANSACTION_LOAN){
-            balance.setBounds(130, 220, 200,30);
+            balance.setBounds(130, 180, 200,30);
             jCenter.add(balance);
 
-            balanceNum.setBounds(350, 220, 200,30);
+            balanceNum.setBounds(350, 180, 200,30);
             jCenter.add(balanceNum);
         } else {
-            interest.setBounds(130, 220, 200,30);
+            interest.setBounds(130, 180, 200,30);
             jCenter.add(interest);
 
-            iRate.setBounds(350, 220, 200,30);
+            iRate.setBounds(350, 180, 200,30);
             jCenter.add(iRate);
         }
 
 
-        amount.setBounds(130, 290, 200,30);
+        amount.setBounds(130, 240, 200,30);
         jCenter.add(amount);
 
-        amountNum.setBounds(350, 290, 400,30);
+        amountNum.setBounds(350, 240, 400,30);
         amountNum.setBorder(BorderFactory.createEtchedBorder());
         jCenter.add(amountNum);
 
         if (type == Constant.TRANSACTION_DEPOSIT || type == Constant.TRANSACTION_TRANSFER) {
-            receiverLabel.setBounds(130, 360, 200,30);
+            receiverLabel.setBounds(130, 300, 200,30);
             jCenter.add(receiverLabel);
 
-            receiverAccount.setBounds(350, 360, 400,30);
+            receiverAccount.setBounds(350, 300, 400,30);
             receiverAccount.setBorder(BorderFactory.createEtchedBorder());
             jCenter.add(receiverAccount);
         }
+
+        pin.setBounds(130, 360, 200,30);
+        jCenter.add(pin);
+
+        pinInput.setBounds(350, 360, 400,30);
+        pinInput.setBorder(BorderFactory.createEtchedBorder());
+        jCenter.add(pinInput);
 
         //South
         JPanel jSouth = new JPanel();
@@ -174,6 +193,17 @@ public class TransactionDetail extends JFrame implements ActionListener {
                             new Date(new java.util.Date().getTime()));
 
                     if (returnCode == Constant.SUCCESS_CODE){
+                        JOptionPane.showMessageDialog(null, "Success!!");
+                        setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Something wrong! Please Try it again!");
+                    }
+                } else if (type == Constant.TRANSACTION_TRANSFER) {
+                    int rCode = transactionController.transferToAccount(username, senderAccount.getText(),
+                            receiverAccount.getText(), Integer.parseInt(pinInput.getText()),
+                            Double.parseDouble(amountNum.getText()), cType.getItemAt(cType.getSelectedIndex()));
+                    if (rCode == Constant.SUCCESS_CODE){
+                        JOptionPane.showMessageDialog(null, "Success!!");
                         setVisible(false);
                     } else {
                         JOptionPane.showMessageDialog(null, "Something wrong! Please Try it again!");

@@ -7,5 +7,5 @@ public class Main {
     // todo
     // 1. fee
     // 2. interest rate
-
+    // 3. transfer to self, increase, not charge fee
 }
