@@ -50,7 +50,7 @@ public class LoanDetail extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         try {
             if (ae.getSource() == request) {
-                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_LOAN);
+                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_LOAN, null);
                 td.setUsername(username);
                 td.setVisible(true);
                 setVisible(false);

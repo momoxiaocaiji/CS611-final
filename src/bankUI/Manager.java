@@ -125,13 +125,13 @@ public class Manager extends JFrame implements ActionListener {
         // stock
         stock = new JPanel();
         stock.setLayout(null);
-        List<Stock> stockList = new ArrayList<>();
-        stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
-        stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
-        stockList.add(new Stock("AA", 5.0, 7.8, 4.3, 4.9));
-        stockList.add(new Stock("BB", 5.0, 7.8, 4.3, 4.9));
-        wholeStockList = new StockListPanel(stockList, Constant.STOCK_MANAGER_MODIFY);
-        wholeStockList.setSize(900, 800);
+//        List<Stock> stockList = new ArrayList<>();
+//        stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
+//        stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
+//        stockList.add(new Stock("AA", 5.0, 7.8, 4.3, 4.9));
+//        stockList.add(new Stock("BB", 5.0, 7.8, 4.3, 4.9));
+//        wholeStockList = new StockListPanel(stockList, Constant.STOCK_MANAGER_MODIFY);
+//        wholeStockList.setSize(900, 800);
         stock.add(wholeStockList);
 
         // loanRequest

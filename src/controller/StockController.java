@@ -5,26 +5,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import model.Stock;
-import model.Customer;
 import model.CustomerOwnedStock;
 import model.SecuritiesAccount;
 import service.AccountService;
-import service.LoginService;
 import service.StockService;
 
 public class StockController {
 
 	StockService stockService = new StockService();
 	AccountService accountService = new AccountService();
-	LoginService loginService = new LoginService();
 	
 	public ArrayList<Stock> getStockArrayList() throws SQLException, Exception {
     	ArrayList<Stock> stockArrayList = stockService.getStockArrayList();
 		return stockArrayList;
 	}
 
-	public ArrayList<CustomerOwnedStock> getCustomerStockArrayList(String customerId) throws SQLException, Exception {
-    	ArrayList<CustomerOwnedStock> customerStockArrayList = stockService.getCustomerStockArrayList(customerId);
+	public ArrayList<CustomerOwnedStock> getCustomerStockArrayList() throws SQLException, Exception {
+    	ArrayList<CustomerOwnedStock> customerStockArrayList = stockService.getCustomerStockArrayList();
 		return customerStockArrayList;
 	}
 	
@@ -37,20 +34,13 @@ public class StockController {
 	}
 	
 	//TODO
-	public void buyStock(String ticker, int quantity, String customerId) throws SQLException, Exception {
-		Customer customer = loginService.getCustomerDetails(customerId);
-    	java.util.Date javaDate = new java.util.Date();
-        java.sql.Date sqlDate = new java.sql.Date(javaDate.getTime());
-		stockService.buyStock(stockService.getStock(ticker), quantity, accountService.getSecuritiesInfo(customer), sqlDate);
+	public void buyStock(String ticker, int quantity, int securitiesAccountId) throws SQLException, Exception {
+		stockService.buyStock(stockService.getStock(ticker), quantity, accountService.getSecuritiesInfo(null), null);
 	}
 	
 	//TODO
 	public void sellStock() throws SQLException, Exception {
 		stockService.sellStock(null, 0, null);
-	}
-
-	public CustomerOwnedStock getCustomerStock(String ticker, String customerId, double purchasePrice) throws Exception, SQLException {
-		return stockService.getCustomerStock(ticker, customerId, purchasePrice);
 	}
 
 }

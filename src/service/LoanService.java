@@ -150,4 +150,65 @@ public class LoanService {
         return loan;
 
     }
+
+    public int payLoan(String customerId,String accountId,int loanId,double amount,String accountType) throws Exception {
+        //get loan details
+        Connection connection = dbController.connectToDb();
+        String query = "select * from loan where loanId="+loanId;
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+        Loan loan = null;
+        if(resultSet.next()){
+            loan = createLoanObject(resultSet);
+        }else{
+            return bankConstants.getLOAN_NOT_FOUND();
+        }
+
+        double totalPaymentPending = ((loan.getPrincipalAmount()*loan.getRateOfInterest()*loan.getTenure())/100)+loan.getPrincipalAmount();
+
+        if(accountType.equalsIgnoreCase("saving")) {
+            String query1 = "select * from saving_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
+            Statement statement1 = connection.createStatement();
+            ResultSet resultSet1 = statement1.executeQuery(query1);
+            double currentBalance = 0;
+            if(resultSet1.next()){
+                currentBalance=resultSet1.getDouble("amount");
+                if(currentBalance<amount){
+                    return bankConstants.getINSUFFICIENT_FUNDS();
+                }else{
+                    double amt = currentBalance-amount;
+                    String update = "update saving_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    statement.executeUpdate(update);
+                }
+            }else{
+                return bankConstants.getACCOUNT_NOT_FOUND();
+            }
+        }else {
+            String query1 = "select * from checking_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
+            Statement statement1 = connection.createStatement();
+            ResultSet resultSet1 = statement1.executeQuery(query1);
+            double currentBalance = 0;
+            if(resultSet1.next()){
+                currentBalance=resultSet1.getDouble("amount");
+                if(currentBalance<amount){
+                    return bankConstants.getINSUFFICIENT_FUNDS();
+                }else{
+                    double amt = currentBalance-amount;
+                    String update = "update checking_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    statement.executeUpdate(update);
+                }
+            }else{
+                return bankConstants.getACCOUNT_NOT_FOUND();
+            }
+        }
+
+        //reduce amount in loan
+        double outstanding = totalPaymentPending-amount;
+        String payLoan = "update loan set amount="+outstanding+" where loanId="+loanId+";";
+        statement.executeUpdate(payLoan);
+
+        return bankConstants.getSUCCESS_CODE();
+
+
+    }
 }

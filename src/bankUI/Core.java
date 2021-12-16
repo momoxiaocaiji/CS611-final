@@ -13,6 +13,7 @@ import controller.*;
 //always access model.Stock as model.Stock to avoid colliding with entity.Stock
 import model.*;
 
+import javax.jws.Oneway;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -92,18 +93,18 @@ public class Core extends JFrame implements ActionListener {
 
         // -----------------------------------------
         // stock
-        stock = new JPanel();
-        stock.setLayout(new BorderLayout());
-        SecuritiesAccount se = accountController.getSecuritiesAccountInfo(username);
-        // user doesn't have a securities account.
-        if (se == null) {
-            createSecurities = new JButton("+ Create New Account");
-            stock.add(createSecurities, BorderLayout.NORTH);
-            createSecurities.setPreferredSize(new Dimension(0, 120));
-            createSecurities.addActionListener(this);
-        } else {
-            fillStock(se);
-        }
+//        stock = new JPanel();
+//        stock.setLayout(new BorderLayout());
+//        SecuritiesAccount se = accountController.getSecuritiesAccountInfo(username);
+//        // user doesn't have a securities account.
+//        if (se == null) {
+//            createSecurities = new JButton("+ Create New Account");
+//            stock.add(createSecurities, BorderLayout.NORTH);
+//            createSecurities.setPreferredSize(new Dimension(0, 120));
+//            createSecurities.addActionListener(this);
+//        } else {
+//            fillStock(se);
+//        }
 
 
         // -----------------------------------------
@@ -210,13 +211,36 @@ public class Core extends JFrame implements ActionListener {
             } else if (ae.getSource() == createSaving) {
                 new CreateAccount("Saving", "1000000", username, this).setVisible(true);
             }else if (ae.getSource() == deposit) {
-                new TransactionDetail(Constant.TRANSACTION_DEPOSIT).setVisible(true);
-            } else if (ae.getSource() == withdrawal) {
-                new TransactionDetail(Constant.TRANSACTION_WITHDRAWAL).setVisible(true);
-            } else if (ae.getSource() == transfer) {
-                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_TRANSFER);
+                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_DEPOSIT, null);
                 td.setVisible(true);
                 td.setUsername(username);
+                td.setCore(this);
+            } else if (ae.getSource() == withdrawal) {
+                Map<String, Map<String, Double>> accountInfo = new HashMap<>();
+                for (Object list : accountController.getAccountInfoForCustomer(username)) {
+                    if (list instanceof CheckingAccount) {
+                        accountInfo.put(((CheckingAccount) list).getAccountId(), ((CheckingAccount) list).getMoney());
+                    } else if (list instanceof SavingAccount) {
+                        accountInfo.put(((SavingAccount) list).getAccountId(), ((SavingAccount) list).getMoney());
+                    }
+                }
+                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_WITHDRAWAL, accountInfo);
+                td.setVisible(true);
+                td.setUsername(username);
+                td.setCore(this);
+            } else if (ae.getSource() == transfer) {
+                Map<String, Map<String, Double>> accountInfo = new HashMap<>();
+                for (Object list : accountController.getAccountInfoForCustomer(username)) {
+                    if (list instanceof CheckingAccount) {
+                        accountInfo.put(((CheckingAccount) list).getAccountId(), ((CheckingAccount) list).getMoney());
+                    } else if (list instanceof SavingAccount) {
+                        accountInfo.put(((SavingAccount) list).getAccountId(), ((SavingAccount) list).getMoney());
+                    }
+                }
+                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_TRANSFER, accountInfo);
+                td.setVisible(true);
+                td.setUsername(username);
+                td.setCore(this);
             } else if (ae.getSource() == loan) {
                 List<Loan> loanList = loanController.getLoansForCustomer(username).
                         stream().filter(loan -> loan.getIsLoanApproved() == 1).collect(Collectors.toList());

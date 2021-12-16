@@ -136,47 +136,47 @@ public class StockListPanel extends JPanel{
                 op.setFont(new Font("Raleway", Font.BOLD, 14));
                 op.setBorder(BorderFactory.createLineBorder(Color.blue));
 
-                op.addActionListener(e -> {
-                	//sell: not enough #(open)
-                    if (type == Constant.STOCK_CUSTOMER_SALE && Integer.parseInt(num.getText()) > s.getOpen()) {
-                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
-                    }
-                	//buy: not enough #
-                    else if(type == Constant.STOCK_CUSTOMER_BUY && Integer.parseInt(num.getText()) > s.getOpen()) {
-                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
-                    }
-                    //buy: success
-                    else if(type == Constant.STOCK_CUSTOMER_BUY) {
-                        JOptionPane.showMessageDialog(null, "Buy complete");
-                    	try {
-							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
-			    			se.buyStock(s.getCurrent(), Integer.parseInt(num.getText()));
-						} catch (Exception e1) {
-							e1.printStackTrace();
-							System.out.println("error");
-						}
-                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
-                    }
-                    //sell: success
-                    else if(type == Constant.STOCK_CUSTOMER_SALE) {
-                        //change the displayed stats of the securities account, when type == SALE
-                        JOptionPane.showMessageDialog(null, "Sell complete");
-                        try {
-							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
-							//TODO a way to getPurchasePrice
-							CustomerOwnedStock cStock = stockController.getCustomerStock(s.getName(), se.getCustomerId(), 20);
-			    			se.sellStock(s.getCurrent(), s.getCurrent()-cStock.getPurchasePrice(), Integer.parseInt(num.getText()));
-						} catch (Exception e1) {
-							e1.printStackTrace();
-							System.out.println("error");
-						}
-                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
-                    }
-                    //others
-                    else {
-
-                    }
-                });
+//                op.addActionListener(e -> {
+//                	//sell: not enough #(open)
+//                    if (type == Constant.STOCK_CUSTOMER_SALE && Integer.parseInt(num.getText()) > s.getOpen()) {
+//                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
+//                    }
+//                	//buy: not enough #
+//                    else if(type == Constant.STOCK_CUSTOMER_BUY && Integer.parseInt(num.getText()) > s.getOpen()) {
+//                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
+//                    }
+//                    //buy: success
+//                    else if(type == Constant.STOCK_CUSTOMER_BUY) {
+//                        JOptionPane.showMessageDialog(null, "Buy complete");
+//                    	try {
+//							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
+//			    			se.buyStock(s.getCurrent(), Integer.parseInt(num.getText()));
+//						} catch (Exception e1) {
+//							e1.printStackTrace();
+//							System.out.println("error");
+//						}
+//                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+//                    }
+//                    //sell: success
+//                    else if(type == Constant.STOCK_CUSTOMER_SALE) {
+//                        //change the displayed stats of the securities account, when type == SALE
+//                        JOptionPane.showMessageDialog(null, "Sell complete");
+//                        try {
+//							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
+//							//TODO a way to getPurchasePrice
+//							CustomerOwnedStock cStock = stockController.getCustomerStock(s.getName(), se.getCustomerId(), 20);
+//			    			se.sellStock(s.getCurrent(), s.getCurrent()-cStock.getPurchasePrice(), Integer.parseInt(num.getText()));
+//						} catch (Exception e1) {
+//							e1.printStackTrace();
+//							System.out.println("error");
+//						}
+//                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+//                    }
+//                    //others
+//                    else {
+//
+//                    }
+//                });
 
                 operationPanel.add(num);
                 operationPanel.add(op);

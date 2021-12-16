@@ -2,7 +2,6 @@ package model;
 
 public class BankConstants {
     private final String DBURL = "jdbc:mysql://127.0.0.1:3306/BankMod";
-    private final String DBURL = "jdbc:mysql://127.0.0.1:3306/atm?allowMultiQueries=true";
     private final String DBUSERNAME = "root";
     private final String DBPWD = "password";
 
@@ -26,6 +25,18 @@ public class BankConstants {
     private final int INSUFFICIENT_FUNDS = 800;
 
     private final int DEFAULT_BANKID = 1;
+
+    private final int LOAN_NOT_FOUND = -1;
+
+    private final int ACCOUNT_NOT_FOUND = -1;
+
+    public int getACCOUNT_NOT_FOUND() {
+        return ACCOUNT_NOT_FOUND;
+    }
+
+    public int getLOAN_NOT_FOUND() {
+        return LOAN_NOT_FOUND;
+    }
 
     public int getDEFAULT_BANKID() {
         return DEFAULT_BANKID;

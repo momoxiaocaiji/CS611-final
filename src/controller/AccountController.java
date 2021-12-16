@@ -2,7 +2,6 @@ package controller;
 
 import model.BankConstants;
 import model.Customer;
-import model.SecuritiesAccount;
 import service.AccountService;
 import service.LoginService;
 
@@ -42,18 +41,4 @@ public class AccountController {
         return accountService.getAccountInfoForCustomer(customer);
     }
 
-    
-    public int createSecuritiesAccount (String customerId, double depositAmount) throws Exception {
-        Customer customer = loginService.getCustomerDetails(customerId);
-        if(customer==null)
-        	return bankConstants.getNOT_FOUND();
-        
-    	return accountService.createNewSecuritiesAccount(customer, depositAmount);
-    }
-    
-    public SecuritiesAccount getSecuritiesAccountInfo (String customerId) throws Exception {
-        Customer customer = loginService.getCustomerDetails(customerId);
-    	SecuritiesAccount securitiesAccount = accountService.getSecuritiesInfo(customer);
-    	return securitiesAccount;
-    }
 }
