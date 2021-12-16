@@ -44,11 +44,12 @@ public class StockService {
      * 
      * @return ArrayList<CustomerOwnedStock>
      */
-    public ArrayList<CustomerOwnedStock> getCustomerStockArrayList() throws Exception, SQLException{
+    public ArrayList<CustomerOwnedStock> getCustomerStockArrayList(String customerId) throws Exception, SQLException{
     	ArrayList<CustomerOwnedStock> customerOwnedStock = new ArrayList<CustomerOwnedStock>(); 
     	Connection connection = dbController.connectToDb();
     	Statement statement = connection.createStatement();
-    	String query = "SELECT stockId, customerId, purchasePrice FROM customer_owned_stock";
+    	String query = "SELECT stockId, customerId, purchasePrice FROM customer_owned_stock"+
+        		" WHERE customerId='"+customerId+"'; ";
     	ResultSet resultSet = statement.executeQuery(query);
     	while(resultSet.next()) {
     		customerOwnedStock.add(getCustomerStock( getStock(resultSet.getInt("stockId")).getTicker(), resultSet.getString("customerId"), resultSet.getDouble("purchasePrice")));
@@ -111,7 +112,7 @@ public class StockService {
     	if(stockExists) {
     		String query = "DELECT * from stock where ticker='"+ticker+"';";
             Statement statement = connection.createStatement();
-            statement.executeQuery(query);
+            statement.executeUpdate(query);
     	}
     	
 	}
@@ -207,15 +208,15 @@ public class StockService {
         		//check exist in customer Stock, which mean price = purchasePrice; if so, just ++quantity
         		if(checkIfCustomerStockExist(connection, stock.getStockId(), securitiesAccount.getCustomerId(), stock.getPrice())==true) {
         			//UPDATE customer_owned_stock(`quantity`)
-        			String query1 = "UPDATE customer_owned_stock SET quantity=quantity"+quantity+
+        			String query0 = "UPDATE customer_owned_stock SET quantity=quantity+"+quantity+
     		        		" WHERE customerId='"+securitiesAccount.getCustomerId()+"' AND stockId="+stock.getStockId()+" AND purchasePrice="+stock.getPrice()
     		        				+ "; ";
         			Statement stmt = connection.createStatement();
-        			stmt.executeQuery(query1);
-                    String query = "UPDATE stock SET open = open-"+stock.getOpen()+" WHERE stockId="+stock.getStockId()+";"
-							+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount-"+quantity*stock.getPrice()
-								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
-        			stmt.executeQuery(query);
+        			stmt.executeUpdate(query0);
+                    String query1 = "UPDATE stock SET open = open-"+quantity+" WHERE stockId="+stock.getStockId()+";"
+                    		+ "UPDATE securities_account SET investmentAmount = investmentAmount-"+(quantity*stock.getPrice())
+                    			+ " WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
+        			stmt.executeUpdate(query1);
         		}
         		else {
         			//INSERT new row, 5 values. does the order matter?
@@ -231,10 +232,10 @@ public class StockService {
                     preparedStatement1.setDouble(5, stock.getPrice());
                     int rowCount = preparedStatement1.executeUpdate();
                     String query = "UPDATE stock SET open = open-"+stock.getOpen()+" WHERE stockId="+stock.getStockId()+";"
-							+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount-"+quantity*stock.getPrice()
+							+ "UPDATE securities_Account SET investmentAmount = investmentAmount-"+quantity*stock.getPrice()
 								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
         			Statement stmt = connection.createStatement();
-        			stmt.executeQuery(query);
+        			stmt.executeUpdate(query);
                     
                     if(rowCount!=0) {
                         //successfully created stock
@@ -264,24 +265,25 @@ public class StockService {
 		boolean existInStock = checkIfStockExist(connection, cStock.getTicker());
 		boolean existInCustomerStock = checkIfCustomerStockExist(connection, cStock.getStockId(), securitiesAccount.getCustomerId(), cStock.getPurchasePrice());
 		if(existInStock && existInCustomerStock) {
+			//TODO update securitiesAccount.realizedProfit
 			if(cStock.getQuantity()>sellQuantity) {
 				//sell some
 				//cStock.quantity --; stock.open++; securitiesAccount.amount++
 		        String query = "UPDATE customer_owned_stock SET quantity = quantity-"+sellQuantity+
 		        		" WHERE customerId='"+cStock.getCustomerId()+"' AND stockId="+cStock.getStockId()+" AND purchasePrice="+cStock.getPurchasePrice()+";"
 		        				+ "UPDATE stock SET open = open+"+sellQuantity+" WHERE stockId="+cStock.getStockId()+";"
-		        						+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
+		        						+ "UPDATE securities_Account SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
 		        								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
-				statement.executeQuery(query);
+				statement.executeUpdate(query);
 			}
 			else if(cStock.getQuantity()==sellQuantity) {
 				//sell all
 				//removeCustomerStock; stock.open++; securitiesAccount.amout++
 				removeCustomerStock(cStock, securitiesAccount.getCustomerId());
 				String query = "UPDATE stock SET open = open+"+sellQuantity+" WHERE stockId="+cStock.getStockId()+";"
-							+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
+							+ "UPDATE securities_Account SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
 								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
-				statement.executeQuery(query);
+				statement.executeUpdate(query);
 			}
 			else {
 				//illeagal value of sellQuantity
@@ -301,7 +303,7 @@ public class StockService {
     		String query = "DELECT * from customer_owned_stock "
     				+ "where stockId='"+cStock.getStockId()+"' and customerId='"+customerId+"' and purchasedPrice="+cStock.getPurchasePrice()+";";
             Statement statement = connection.createStatement();
-            statement.executeQuery(query);
+            statement.executeUpdate(query);
     	}
 	}
 

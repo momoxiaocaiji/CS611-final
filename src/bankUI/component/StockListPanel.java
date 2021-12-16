@@ -4,9 +4,13 @@ import bankUI.Constant;
 import bankUI.Core;
 import bankUI.StockDetail;
 import bankUI.entity.Stock;
+import controller.StockController;
+import model.CustomerOwnedStock;
+import model.SecuritiesAccount;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,10 +19,13 @@ public class StockListPanel extends JPanel{
     private int type;
     private Core assoCore;
     private List<String> testData;
+    private StockController stockController = new StockController();
+    private SecuritiesAccount se;
 
     public JFrame getAssoFrame() {
         return assoCore;
     }
+    
 
     public void setAssoFrame(Core assoFrame) {
         this.assoCore = assoFrame;
@@ -32,14 +39,15 @@ public class StockListPanel extends JPanel{
         this.testData = testData;
     }
 
-    public StockListPanel(List<Stock> stockList, int type) {
+    public StockListPanel(List<Stock> stockList, int type, SecuritiesAccount se) {
         this.stockList = stockList;
         this.type = type;
+    	this.se = se;
         fillPanel();
     }
 
     public StockListPanel(int type) {
-        this(new ArrayList<>(), type);
+        this(new ArrayList<>(), type, null);
     }
 
     public StockListPanel(){
@@ -52,7 +60,7 @@ public class StockListPanel extends JPanel{
         fillPanel();
     }
 
-    private void fillPanel(){
+    private void fillPanel() {
         setLayout(new GridLayout(stockList.size() + 1, 1));
         for(Stock s : stockList){
             // loan panel
@@ -74,7 +82,7 @@ public class StockListPanel extends JPanel{
             detail.add(open);
             detail.add(openPrice);
 
-            JLabel current = new JLabel("Current: ");
+            JLabel current = new JLabel("Current Price: ");
             current.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 16));
             JTextField currentPrice = new JTextField(String.valueOf(s.getCurrent()), 20);
             if (type != Constant.STOCK_MANAGER_MODIFY) {
@@ -129,10 +137,45 @@ public class StockListPanel extends JPanel{
                 op.setBorder(BorderFactory.createLineBorder(Color.blue));
 
                 op.addActionListener(e -> {
-                    if (type == Constant.STOCK_CUSTOMER_SALE && Integer.parseInt(num.getText()) > s.getNum()) {
+                	//sell: not enough #(open)
+                    if (type == Constant.STOCK_CUSTOMER_SALE && Integer.parseInt(num.getText()) > s.getOpen()) {
                         JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
                     }
-                    assoCore.changeInfo("$1200.0");
+                	//buy: not enough #
+                    else if(type == Constant.STOCK_CUSTOMER_BUY && Integer.parseInt(num.getText()) > s.getOpen()) {
+                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
+                    }
+                    //buy: success
+                    else if(type == Constant.STOCK_CUSTOMER_BUY) {
+                        JOptionPane.showMessageDialog(null, "Buy complete");
+                    	try {
+							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
+			    			se.buyStock(s.getCurrent(), Integer.parseInt(num.getText()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							System.out.println("error");
+						}
+                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+                    }
+                    //sell: success
+                    else if(type == Constant.STOCK_CUSTOMER_SALE) {
+                        //change the displayed stats of the securities account, when type == SALE
+                        JOptionPane.showMessageDialog(null, "Sell complete");
+                        try {
+							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
+							//TODO a way to getPurchasePrice
+							CustomerOwnedStock cStock = stockController.getCustomerStock(s.getName(), se.getCustomerId(), 20);
+			    			se.sellStock(s.getCurrent(), s.getCurrent()-cStock.getPurchasePrice(), Integer.parseInt(num.getText()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							System.out.println("error");
+						}
+                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+                    }
+                    //others
+                    else {
+
+                    }
                 });
 
                 operationPanel.add(num);
