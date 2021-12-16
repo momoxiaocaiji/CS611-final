@@ -3,9 +3,12 @@ package bankUI;
 import bankUI.component.HistoryTable;
 import bankUI.component.LoanListPanel;
 import bankUI.component.StockListPanel;
-import bankUI.entity.Loan;
 import bankUI.entity.Stock;
 import controller.BankManagerController;
+import controller.LoanController;
+import model.CheckingAccount;
+import model.Loan;
+import model.SavingAccount;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Manager extends JFrame implements ActionListener {
 
@@ -30,8 +34,9 @@ public class Manager extends JFrame implements ActionListener {
 
     //MVC
     private BankManagerController bankManagerController = new BankManagerController();
+    private LoanController loanController = new LoanController();
 
-    public Manager() {
+    public Manager() throws Exception {
 
         amountList.add(new Amount());
         amountList.add(new Amount());
@@ -121,10 +126,8 @@ public class Manager extends JFrame implements ActionListener {
         // loanRequest
         loanRequest = new JPanel();
         loanRequest.setLayout(null);
-        List<Loan> loanList = new ArrayList<>();
-        loanList.add(new Loan());
-        loanList.add(new Loan());
-        requestList = new LoanListPanel(loanList, Constant.LOAN_MANAGER);
+        requestList = new LoanListPanel(loanController.getAllLoans().stream().filter(loan -> loan.getIsLoanApproved() == 0)
+                .collect(Collectors.toList()), Constant.LOAN_MANAGER);
         requestList.setSize(900, 800);
         loanRequest.add(requestList);
 
@@ -184,56 +187,89 @@ public class Manager extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         try {
             if (ae.getSource() == search) {
-                amountList.add(new Amount());
                 Map<String, Object> customerInfo = bankManagerController.getCustomerData(customerID.getText());
                 // -------------------------------
                 // checking
+                int checkAccountNum = 0;
                 checking.removeAll();
                 checking.setBorder(BorderFactory.createTitledBorder("Checking"));
-                checking.setLayout(new GridLayout(amountList.size() + 1, 1));
-                for (Amount amount : amountList) {
+                // multiple acconut
+//                for (Object amount : customerInfo) {
+//                    JPanel oneAccount = new JPanel();
+//                    oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+//                    oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0, 5));
+//                    checking.add(oneAccount);
+//                    for (String type : amount.currencies.keySet()) {
+//                        JLabel t = new JLabel(type);
+//                        t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+//                        JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
+//                        b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+//                        oneAccount.add(t);
+//                        oneAccount.add(b);
+//                    }
+//                }
+                if (customerInfo.containsKey("Checking")) {
+                    CheckingAccount account = (CheckingAccount) customerInfo.get("Checking");
+                    checkAccountNum ++;
                     JPanel oneAccount = new JPanel();
                     oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
-                    oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0, 5));
+                    oneAccount.setLayout(new GridLayout(account.getMoney().size(), 2, 0, 5));
                     checking.add(oneAccount);
-                    for (String type : amount.currencies.keySet()) {
+                    for (String type : account.getMoney().keySet()) {
                         JLabel t = new JLabel(type);
                         t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
-                        JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
+                        JLabel b = new JLabel(String.valueOf(account.getMoney().get(type)));
                         b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
                         oneAccount.add(t);
                         oneAccount.add(b);
                     }
                 }
+                checking.setLayout(new GridLayout(checkAccountNum + 1, 1));
                 // -------------------------------
 
                 // -------------------------------
                 // saving
+                int savingAccountNum = 0;
                 saving.removeAll();
                 saving.setBorder(BorderFactory.createTitledBorder("Saving"));
-                saving.setLayout(new GridLayout(amountList.size() + 1, 1));
-                for (Amount amount : amountList) {
+//                for (Amount amount : amountList) {
+//                    JPanel oneAccount = new JPanel();
+//                    oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+//                    oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0, 5));
+//                    saving.add(oneAccount);
+//                    for (String type : amount.currencies.keySet()) {
+//                        JLabel t = new JLabel(type);
+//                        t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+//                        JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
+//                        b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+//                        oneAccount.add(t);
+//                        oneAccount.add(b);
+//                    }
+//                }
+                if (customerInfo.containsKey("Saving")) {
+                    SavingAccount account = (SavingAccount) customerInfo.get("Saving");
+                    savingAccountNum ++;
                     JPanel oneAccount = new JPanel();
                     oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
-                    oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0, 5));
+                    oneAccount.setLayout(new GridLayout(account.getMoney().size(), 2, 0, 5));
                     saving.add(oneAccount);
-                    for (String type : amount.currencies.keySet()) {
+                    for (String type : account.getMoney().keySet()) {
                         JLabel t = new JLabel(type);
                         t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
-                        JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
+                        JLabel b = new JLabel(String.valueOf(account.getMoney().get(type)));
                         b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
                         oneAccount.add(t);
                         oneAccount.add(b);
                     }
                 }
+                saving.setLayout(new GridLayout(savingAccountNum + 1, 1));
                 // -------------------------------
 
                 // -------------------------------
                 // loan
                 loan.removeAll();
-                List<Loan> loanList = new ArrayList<>();
-                loanList.add(new Loan());
-                loanList.add(new Loan());
+                List<Loan> loanList = loanController.getLoansForCustomer(customerID.getText()).
+                        stream().filter(loan -> loan.getIsLoanApproved() == 1).collect(Collectors.toList());
                 loan.resetData(loanList);
 
                 // -------------------------------
@@ -255,9 +291,5 @@ public class Manager extends JFrame implements ActionListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args){
-        new Manager().setVisible(true);
     }
 }

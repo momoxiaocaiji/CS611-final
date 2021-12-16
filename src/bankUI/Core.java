@@ -4,6 +4,10 @@ import bankUI.component.HistoryTable;
 import bankUI.component.StockListPanel;
 import bankUI.entity.Stock;
 import controller.AccountController;
+import controller.LoanController;
+import model.CheckingAccount;
+import model.Loan;
+import model.SavingAccount;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -19,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class Amount {
     Map<String, Double> currencies;
@@ -56,6 +61,7 @@ public class Core extends JFrame implements ActionListener {
 
     // MVC
     private AccountController accountController = new AccountController();
+    private LoanController loanController = new LoanController();
 
     public Core(List userInfo, String username) {
         //amountList.add(new Amount());
@@ -68,13 +74,14 @@ public class Core extends JFrame implements ActionListener {
         info = new JPanel();
         info.setLayout(new GridLayout(2, 1));
 
+
         checking = new JPanel();
-        fillInfo(userAccountInfo);
         checking.setBorder(BorderFactory.createTitledBorder("Checking"));
 
         saving = new JPanel();
         saving.setBorder(BorderFactory.createTitledBorder("Saving"));
 
+        fillInfo(userAccountInfo);
 
         info.add(checking);
         info.add(saving);
@@ -85,12 +92,13 @@ public class Core extends JFrame implements ActionListener {
         // stock
         stock = new JPanel();
         stock.setLayout(new BorderLayout());
-        Amount se = new Amount();
+        Amount se = null;
         // user doesn't have a securities account.
         if (se == null) {
             createSecurities = new JButton("+ Create New Account");
             stock.add(createSecurities, BorderLayout.NORTH);
             createSecurities.setPreferredSize(new Dimension(0, 120));
+            createSecurities.addActionListener(this);
         } else {
             JPanel securitiesAccountPanel = new JPanel();
             stock.add(securitiesAccountPanel, BorderLayout.NORTH);
@@ -235,14 +243,20 @@ public class Core extends JFrame implements ActionListener {
             if (ae.getSource() == createChecking) {
                 new CreateAccount("Checking", "10000000", username, this).setVisible(true);
                 //setVisible(false);
-            } else if (ae.getSource() == deposit) {
+            } else if (ae.getSource() == createSaving) {
+                new CreateAccount("Saving", "1000000", username, this).setVisible(true);
+            }else if (ae.getSource() == deposit) {
                 new TransactionDetail(Constant.TRANSACTION_DEPOSIT).setVisible(true);
             } else if (ae.getSource() == withdrawal) {
                 new TransactionDetail(Constant.TRANSACTION_WITHDRAWAL).setVisible(true);
             } else if (ae.getSource() == transfer) {
                 new TransactionDetail(Constant.TRANSACTION_TRANSFER).setVisible(true);
             } else if (ae.getSource() == loan) {
-                new LoanDetail().setVisible(true);
+                List<Loan> loanList = loanController.getLoansForCustomer(username).
+                        stream().filter(loan -> loan.getIsLoanApproved() == 1).collect(Collectors.toList());
+                new LoanDetail(loanList , username).setVisible(true);
+            } else if (ae.getSource() == createSecurities) {
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -257,26 +271,53 @@ public class Core extends JFrame implements ActionListener {
     public void fillInfo(List userAccountInfo){
         // Checking
         checking.removeAll();
-        amountList.add(new Amount());
-        checking.setLayout(new GridLayout(amountList.size() + 1, 1));
-        for (Amount amount : amountList) {
-            JPanel oneAccount = new JPanel();
-            oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
-            oneAccount.setLayout(new GridLayout(amount.currencies.size(), 2, 0, 5));
-            checking.add(oneAccount);
-            for (String type : amount.currencies.keySet()) {
-                JLabel t = new JLabel(type);
-                t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
-                JLabel b = new JLabel(String.valueOf(amount.currencies.get(type)));
-                b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
-                oneAccount.add(t);
-                oneAccount.add(b);
+        saving.removeAll();
+        int checkAccountNum = 0;
+        int savingAccountNum = 0;
+        for (Object amount : userAccountInfo) {
+            if (amount instanceof CheckingAccount) {
+                checkAccountNum ++;
+                JPanel oneAccount = new JPanel();
+                oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+                oneAccount.setLayout(new GridLayout(((CheckingAccount) amount).getMoney().size(), 2, 0, 5));
+                checking.add(oneAccount);
+                for (String type : ((CheckingAccount) amount).getMoney().keySet()) {
+                    JLabel t = new JLabel(type);
+                    t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                    JLabel b = new JLabel(String.valueOf(((CheckingAccount) amount).getMoney().get(type)));
+                    b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                    oneAccount.add(t);
+                    oneAccount.add(b);
+                }
+            } else if (amount instanceof SavingAccount) {
+                savingAccountNum ++;
+                JPanel oneAccount = new JPanel();
+                oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+                oneAccount.setLayout(new GridLayout(((SavingAccount) amount).getMoney().size(), 2, 0, 5));
+                saving.add(oneAccount);
+                for (String type : ((SavingAccount) amount).getMoney().keySet()) {
+                    JLabel t = new JLabel(type);
+                    t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                    JLabel b = new JLabel(String.valueOf(((SavingAccount) amount).getMoney().get(type)));
+                    b.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 12));
+                    oneAccount.add(t);
+                    oneAccount.add(b);
+                }
             }
+
         }
+        checking.setLayout(new GridLayout(checkAccountNum + 1, 1));
+        saving.setLayout(new GridLayout(savingAccountNum + 1, 1));
         createChecking = new JButton("+ Create New Account");
         createChecking.addActionListener(this);
+        createSaving = new JButton("+ Create New Account");
+        createSaving.addActionListener(this);
+
         checking.add(createChecking);
         checking.revalidate();
+
+        saving.add(createSaving);
+        saving.revalidate();
     }
 
 //    public static void main(String[] args) {

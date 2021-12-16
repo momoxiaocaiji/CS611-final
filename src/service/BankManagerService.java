@@ -3,10 +3,7 @@ package service;
 import controller.DbController;
 import model.*;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,4 +96,63 @@ public class BankManagerService {
     private Customer getCustomerPersonalInfo(String customerId) throws Exception {
         return loginService.getCustomerDetails(customerId);
     }
+
+    //function to pay interest to accounts
+    public int payInterestToAccounts() throws Exception {
+        //assuming interest is only paid to savings account having balance >=$1000
+        Connection connection = dbController.connectToDb();
+        List<SavingAccount> eligibleAccounts = getInterestEligibleAccounts(connection);
+        if(eligibleAccounts.size()>0) {
+            int statusOfPayment = payInterest(connection,eligibleAccounts);
+            //add to transaction table
+            return statusOfPayment;
+        }
+
+        return bankConstants.getNOT_FOUND();
+
+    }
+
+    //function to update values in table
+    public int payInterest(Connection connection,List<SavingAccount>savingAccounts) throws SQLException {
+        String accountId = ""; String customerId = ""; double amount = 0.0;
+
+        for(SavingAccount savingAccount : savingAccounts) {
+            accountId = savingAccount.getAccountId();
+            customerId = savingAccount.getCustomerId();
+            double principal = savingAccount.getAmount();
+            double interest = (bankConstants.getRATE_OF_INTEREST()*principal)/100;
+            amount = principal+interest;
+            String query = "UPDATE saving_account set amount="+amount+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+            System.out.println(query);
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+        }
+
+        return bankConstants.getSUCCESS_CODE();
+
+    }
+
+    //function to get all savings account having balance >1000
+    private List<SavingAccount> getInterestEligibleAccounts(Connection connection) throws Exception {
+
+        List<SavingAccount> savingAccounts = new ArrayList<>();
+        Statement statement = connection.createStatement();
+        String query = "select * from saving_account where amount >="+bankConstants.getMINIMUM_BALANCE_FOR_INTEREST()+";";
+
+        ResultSet rs = statement.executeQuery(query);
+        while (rs.next()){
+            SavingAccount savingAccount = new SavingAccount();
+            savingAccount.setAccountId(rs.getString("accountId"));
+            savingAccount.setAccountNum(String.valueOf(rs.getInt("accountNum")));
+            savingAccount.setCurrency(rs.getString("currency"));
+            savingAccount.setAmount(rs.getDouble("amount"));
+            savingAccount.setCustomerId(rs.getString("customerId"));
+
+            savingAccounts.add(savingAccount);
+        }
+
+        return savingAccounts;
+
+    }
+
 }

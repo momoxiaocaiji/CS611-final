@@ -1,10 +1,14 @@
 package bankUI;
 
 
+import controller.LoanController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,15 +35,32 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
     JLabel amount = new JLabel("Amount: ");
 
-    JTextField amountNum = new JTextField(20);
+    private JTextField amountNum = new JTextField(20);
 
-    JLabel receiverLabel = new JLabel("Receiver Account：");
+    private JLabel receiverLabel = new JLabel("Receiver Account：");
 
-    JTextField receiverAccount = new JTextField(20);
+    private JTextField receiverAccount = new JTextField(20);
 
-    JButton execute = new JButton("execute");
+    private JButton execute = new JButton("execute");
+
+    private int type;
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    // MVC
+    private LoanController loanController = new LoanController();
 
     public TransactionDetail(int type) {
+        this.type = type;
+
+        // -------------------
 
         cun = new HashMap<>();
         cun.put("USD", 1000.0);
@@ -72,7 +93,7 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
         jCenter.setLayout(null);
 
-        if (type != Constant.TRANSACTION_DEPOSIT) {
+        if (type == Constant.TRANSACTION_WITHDRAWAL || type == Constant.TRANSACTION_TRANSFER) {
             senderLabel.setBounds(130, 80, 200, 30);
             jCenter.add(senderLabel);
 
@@ -112,7 +133,7 @@ public class TransactionDetail extends JFrame implements ActionListener {
         amountNum.setBorder(BorderFactory.createEtchedBorder());
         jCenter.add(amountNum);
 
-        if (type != Constant.TRANSACTION_WITHDRAWAL) {
+        if (type == Constant.TRANSACTION_DEPOSIT || type == Constant.TRANSACTION_TRANSFER) {
             receiverLabel.setBounds(130, 360, 200,30);
             jCenter.add(receiverLabel);
 
@@ -130,6 +151,7 @@ public class TransactionDetail extends JFrame implements ActionListener {
 
         execute.setFont(new Font("Raleway", Font.BOLD, 14));
         execute.setForeground(Color.BLACK);
+        execute.addActionListener(this);
 
         jSouth.add(execute);
 
@@ -145,6 +167,18 @@ public class TransactionDetail extends JFrame implements ActionListener {
         try {
             if (ae.getSource() == cType) {
                 balanceNum.setText(cun.get(cType.getItemAt(cType.getSelectedIndex())).toString());
+            } else if (ae.getSource() == execute) {
+                if (type == Constant.TRANSACTION_LOAN) {
+                    int returnCode = loanController.applyForLoan(username, 1,
+                            Double.parseDouble(amountNum.getText()), 1, Constant.LOAN_RATE,
+                            new Date(new java.util.Date().getTime()));
+
+                    if (returnCode == Constant.SUCCESS_CODE){
+                        setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Something wrong! Please Try it again!");
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

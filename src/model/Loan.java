@@ -5,16 +5,16 @@ import java.util.Date;
 public class Loan {
 
     private int loanId;
-    private int customerId;
+    private String  customerId;
     private double principalAmount;
     private String currency;
     private int tenure;
     private double rateOfInterest;
     private Date loanCommenceDate;
     private int managerId;
-    private boolean isLoanApproved;
+    private int isLoanApproved;
 
-    public Loan(int loanId, int customerId, double principalAmount, String currency, int tenure, double rateOfInterest, Date date, int managerId, boolean isLoanApproved) {
+    public Loan(int loanId, String customerId, double principalAmount, String currency, int tenure, double rateOfInterest, Date date, int managerId, int isLoanApproved) {
         this.loanId = loanId;
         this.customerId = customerId;
         this.principalAmount = principalAmount;
@@ -26,6 +26,8 @@ public class Loan {
         this.isLoanApproved = isLoanApproved;
     }
 
+    public Loan(){}
+
     public int getLoanId() {
         return loanId;
     }
@@ -34,12 +36,20 @@ public class Loan {
         this.loanId = loanId;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
+    }
+
+    public Date getLoanCommenceDate() {
+        return loanCommenceDate;
+    }
+
+    public void setLoanCommenceDate(Date loanCommenceDate) {
+        this.loanCommenceDate = loanCommenceDate;
     }
 
     public double getPrincipalAmount() {
@@ -90,12 +100,12 @@ public class Loan {
         this.managerId = managerId;
     }
 
-    public boolean isLoanApproved() {
+    public int getIsLoanApproved() {
         return isLoanApproved;
     }
 
-    public void setLoanApproved(boolean loanApproved) {
-        isLoanApproved = loanApproved;
+    public void setIsLoanApproved(int isLoanApproved) {
+        this.isLoanApproved = isLoanApproved;
     }
 
     @Override

@@ -1,17 +1,22 @@
 package bankUI.component;
 
 import bankUI.Constant;
-import bankUI.entity.Loan;
+import controller.LoanController;
+import model.Loan;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LoanListPanel extends JPanel {
 
     private List<Loan> loanList;
     private int type;
+
+    // MVC
+    private LoanController loanController = new LoanController();
 
     public LoanListPanel(List<Loan> loanList, int type) {
         this.loanList = loanList;
@@ -39,7 +44,7 @@ public class LoanListPanel extends JPanel {
             // loan panel
             JPanel loanP = new JPanel();
             loanP.setLayout(new BorderLayout());
-            loanP.setBorder(BorderFactory.createTitledBorder("Loan "+ l.type));
+            loanP.setBorder(BorderFactory.createTitledBorder("Loan "+ l.getCurrency()));
             add(loanP, BorderLayout.CENTER);
 
             JPanel detail = new JPanel();
@@ -50,21 +55,21 @@ public class LoanListPanel extends JPanel {
 
             JLabel a = new JLabel("Amount: ");
             a.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
-            JLabel aNum = new JLabel(String.valueOf(l.amount));
+            JLabel aNum = new JLabel(String.valueOf(l.getPrincipalAmount()));
             aNum.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
             detail.add(a);
             detail.add(aNum);
 
             JLabel t = new JLabel("Type: ");
             t.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
-            JLabel tT = new JLabel(l.type);
+            JLabel tT = new JLabel(l.getCurrency());
             tT.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
             detail.add(t);
             detail.add(tT);
 
             JLabel i = new JLabel("Interest: ");
             i.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
-            JLabel iNum = new JLabel(l.interest.toString());
+            JLabel iNum = new JLabel(String.valueOf(l.getRateOfInterest()));
             iNum.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 18));
             detail.add(i);
             detail.add(iNum);
@@ -77,10 +82,25 @@ public class LoanListPanel extends JPanel {
                     op.setText("Prove");
                 }
                 op.addActionListener(e -> {
-                    loanList.remove(0);
-                    this.removeAll();
-                    fillPanel();
-                    this.revalidate();
+                    if (type == Constant.LOAN_CUSTOMER) {
+
+                    } else {
+                        try {
+                            int rCode = loanController.makeLoanDecision(l.getLoanId());
+                            if (rCode == Constant.REJECT_LOAN_CODE) {
+                                JOptionPane.showMessageDialog(null, "You can't prove this loan.");
+                            } else if (rCode == Constant.APPROVE_LOAN_CODE) {
+                                JOptionPane.showMessageDialog(null, "Success!!");
+                                loanList = loanController.getAllLoans().stream().filter(loan -> loan.getIsLoanApproved() == 0)
+                                        .collect(Collectors.toList());
+                                this.removeAll();
+                                fillPanel();
+                                this.revalidate();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 });
                 op.setFont(new Font("Raleway", Font.BOLD, 14));
                 op.setBorder(BorderFactory.createLineBorder(Color.blue));

@@ -16,18 +16,17 @@ public class BankManagerController {
 
     /*
     functions to write
-    1. pay interest to saving_accounts
+    1. pay interest to saving_accounts - done
     2. collect interest from loans and update bank balance
     3. approve loans
     4. change stock prices -done
     5. get daily report
     6. check up on customer -done
-    7. list of stocks available to trade - done
+    7. list of stocks available to trade - done (moved to stock controller)
      */
 
-    //function to get list of stocks
-    public List<Stock> getAvailableStocks() throws Exception {
-        return bankManagerService.getAvailableStocks();
+    public int payInterestToAccounts() throws Exception {
+        return bankManagerService.payInterestToAccounts();
     }
 
     //function to change stock prices - stock id
@@ -39,8 +38,6 @@ public class BankManagerController {
         int stockId = bankManagerService.getStockId(ticker);
         return changeStockPrice(stockId,price);
     }
-
-
 
     public Map<String, Object> getCustomerData(String customerId) throws Exception {
         return bankManagerService.getCustomerData(customerId);

@@ -1,7 +1,7 @@
 package bankUI;
 
 import bankUI.component.LoanListPanel;
-import bankUI.entity.Loan;
+import model.Loan;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,9 +12,15 @@ import java.util.List;
 
 public class LoanDetail extends JFrame implements ActionListener {
 
-    JButton request = new JButton("request a loan");
+    private List<Loan> loanList;
+    private String username;
 
-    public LoanDetail() {
+    private JButton request = new JButton("request a loan");
+
+    public LoanDetail(List<Loan> loanList, String username) {
+        this.loanList = loanList;
+        this.username = username;
+        // -----------------------
 
         request.setFont(new Font("Raleway", Font.BOLD, 20));
 
@@ -29,9 +35,6 @@ public class LoanDetail extends JFrame implements ActionListener {
         add(jNorth, BorderLayout.NORTH);
 
         // center
-        List<Loan> loanList = new ArrayList<>();
-        loanList.add(new Loan());
-        loanList.add(new Loan());
         JPanel jCenter = new LoanListPanel(loanList, Constant.LOAN_CUSTOMER);
 
         add(jCenter, BorderLayout.CENTER);
@@ -47,15 +50,13 @@ public class LoanDetail extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         try {
             if (ae.getSource() == request) {
-                new TransactionDetail(Constant.TRANSACTION_LOAN).setVisible(true);
+                TransactionDetail td = new TransactionDetail(Constant.TRANSACTION_LOAN);
+                td.setUsername(username);
+                td.setVisible(true);
                 setVisible(false);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args){
-        new LoanDetail().setVisible(true);
     }
 }

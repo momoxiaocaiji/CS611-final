@@ -3,7 +3,6 @@ package bankUI.component;
 import bankUI.Constant;
 import bankUI.Core;
 import bankUI.StockDetail;
-import bankUI.entity.Loan;
 import bankUI.entity.Stock;
 
 import javax.swing.*;

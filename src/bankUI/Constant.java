@@ -9,6 +9,9 @@ public class Constant {
     public static final int LOAN_CUSTOMER = 1;
     public static final int LOAN_MANAGER = 2;
     public static final int LOAN_LIST = 3;
+    public static final double LOAN_RATE = 0.01/100;
+    public static final int REJECT_LOAN_CODE = -1;
+    public static final int APPROVE_LOAN_CODE = 1;
 
     public static final int STOCK_CUSTOMER_BUY = 1;
     public static final int STOCK_CUSTOMER_SALE = 2;
