@@ -9,6 +9,9 @@ import controller.TransactionController;
 import model.CheckingAccount;
 import model.Loan;
 import model.SavingAccount;
+import controller.*;
+//always access model.Stock as model.Stock to avoid colliding with entity.Stock
+import model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -255,6 +258,10 @@ public class Core extends JFrame implements ActionListener {
                         stream().filter(loan -> loan.getIsLoanApproved() == 1).collect(Collectors.toList());
                 new LoanDetail(loanList , username).setVisible(true);
             } else if (ae.getSource() == createSecurities) {
+            	// onClick create button:
+                new CreateSecuritiesAccount("Securities", "1000001", username, this).setVisible(true);
+            	
+            	
 
             }
         } catch (Exception e) {
