@@ -36,6 +36,36 @@ coding my project on MacOS
 14. TransactionDetail - The page for customer to make a transaction
 
 
+## Backend Classes
+
+---
+### Model
+1. Person - model to denote a person in our application
+2. Customer - customer using the application. 
+3. Manager - manager for the bank
+4. Bank - model for a bank
+5. Stock - model for a stock
+6. Transaction - model for transactions
+7. login - login details for a person
+8. Account - model for account
+9. Checking Account - model for a checking account of a customer
+10. Saving Account - model for a saving of a customer
+11. Securities Account - model for a securities account
+12. Loan - model for a loan
+13. CustomerOwnedStock - stocks owned by customer
+
+
+### Controller and Service
+Each controller has a corresponding service class which consists of helper functions to implement the logic of the controller.
+1. AccountController & AccountService - classes to implement functions related to accounts. 
+2. BankManagerController & BankManagerService - functions and tasks carried out by the bank manager
+3. DbController & DbService - connect to database
+4. LoanController & LoanService - classes to implement functions related to loans of a customer
+5. LoginController & LoginService - classes to implement signIn, signUp etc.
+6. StockController & StockService - classes to implement stock and securities functionalities
+7. TransactionController & TransactionService - classes to implement transaction features such as recording txs, making deposits and withdrawals, etc.
+
+
 
 ## Note
 

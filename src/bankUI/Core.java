@@ -261,7 +261,7 @@ public class Core extends JFrame implements ActionListener {
             if (amount instanceof CheckingAccount) {
                 checkAccountNum ++;
                 JPanel oneAccount = new JPanel();
-                oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+                oneAccount.setBorder(BorderFactory.createTitledBorder("Amount " + ((CheckingAccount) amount).getAccountId()));
                 oneAccount.setLayout(new GridLayout(((CheckingAccount) amount).getMoney().size(), 2, 0, 5));
                 checking.add(oneAccount);
                 for (String type : ((CheckingAccount) amount).getMoney().keySet()) {
@@ -275,7 +275,7 @@ public class Core extends JFrame implements ActionListener {
             } else if (amount instanceof SavingAccount) {
                 savingAccountNum ++;
                 JPanel oneAccount = new JPanel();
-                oneAccount.setBorder(BorderFactory.createTitledBorder("Amount"));
+                oneAccount.setBorder(BorderFactory.createTitledBorder("Amount " + ((SavingAccount) amount).getAccountId()));
                 oneAccount.setLayout(new GridLayout(((SavingAccount) amount).getMoney().size(), 2, 0, 5));
                 saving.add(oneAccount);
                 for (String type : ((SavingAccount) amount).getMoney().keySet()) {

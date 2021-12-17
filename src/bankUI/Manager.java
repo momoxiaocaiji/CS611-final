@@ -129,14 +129,11 @@ public class Manager extends JFrame implements ActionListener {
         // stock
         stock = new JPanel();
         stock.setLayout(null);
-        stockController.getStockArrayList();
         List<Stock> stockList = new ArrayList<>();
         int i=0;
-        for(model.CustomerOwnedStock s : stockController.getCustomerStockArrayList(customerID.getText())) {
+        for(model.Stock s : stockController.getStockArrayList()) {
             //let Stock.name = model.Stock.ticker
             stockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
-            stockList.get(i).setNum(s.getQuantity());
-            stockList.get(i).setCost(s.getPurchasePrice());
         }
         wholeStockList = new StockListPanel(stockList, Constant.STOCK_MANAGER_MODIFY, null);
         wholeStockList.setSize(900, 800);

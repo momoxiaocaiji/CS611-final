@@ -5,6 +5,7 @@ import bankUI.Core;
 import bankUI.StockDetail;
 import bankUI.entity.Stock;
 import controller.AccountController;
+import controller.BankManagerController;
 import controller.StockController;
 import model.CustomerOwnedStock;
 import model.SecuritiesAccount;
@@ -36,6 +37,7 @@ public class StockListPanel extends JPanel{
 
     // MVC
     private AccountController accountController = new AccountController();
+    private BankManagerController bankManagerController = new BankManagerController();
 
     public JFrame getAssoFrame() {
         return assoCore;
@@ -211,18 +213,23 @@ public class StockListPanel extends JPanel{
 
             if (type == Constant.STOCK_MANAGER_MODIFY) {
                 JPanel opPanel = new JPanel();
-                opPanel.setLayout(new GridLayout(2,1));
+                opPanel.setLayout(new GridLayout(1,1));
 
                 JButton modify = new JButton("Modify");
                 modify.setFont(new Font("Raleway", Font.BOLD, 14));
                 modify.setBorder(BorderFactory.createLineBorder(Color.blue));
                 modify.addActionListener(e -> {
-                    s.setCurrent(Double.parseDouble(currentPrice.getText()));
-                    currentPrice.setText(String.valueOf(s.getCurrent()));
-                    if (s.getCurrent() > s.getOpen()) {
-                        currentPrice.setForeground(Color.GREEN);
-                    } else if (s.getCurrent() < s.getOpen()) {
-                        currentPrice.setForeground(Color.red);
+                    try {
+                        bankManagerController.changeStockPrice(s.getName(), Double.parseDouble(currentPrice.getText()));
+                        List<bankUI.entity.Stock> stockList = new ArrayList<>();
+                        for(model.Stock stock : stockController.getStockArrayList()) {
+                            //let Stock.name = model.Stock.ticker
+                            stockList.add(new bankUI.entity.Stock(stock.getTicker(), stock.getOpen(),
+                                    stock.getHigh(), stock.getLow(), stock.getPrice()));
+                        }
+                        resetData(stockList);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 });
                 opPanel.add(modify);
@@ -234,7 +241,7 @@ public class StockListPanel extends JPanel{
                     stockList.remove(s);
                     resetData(stockList);
                 });
-                opPanel.add(remove);
+                //opPanel.add(remove);
 
 
                 stockP.add(opPanel, BorderLayout.EAST);
@@ -246,7 +253,7 @@ public class StockListPanel extends JPanel{
             JButton addB = new JButton("+ Add a new stock");
             add(addB);
             addB.addActionListener( e -> {
-                new StockDetail().setVisible(true);
+                new StockDetail(this).setVisible(true);
             });
         } else {
             JPanel empty = new JPanel();

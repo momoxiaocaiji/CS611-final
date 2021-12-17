@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import bankUI.component.StockListPanel;
 import controller.StockController;
+import model.Stock;
 
 /**
  * page to create a stock
@@ -20,7 +24,15 @@ public class StockDetail extends JFrame implements ActionListener {
     private String ticker;
     private double openNum;
 
-    public StockDetail() {
+    private StockListPanel stockListPanel;
+
+    //MVC
+
+    public StockDetail(StockListPanel stockListPanel) {
+
+        this.stockListPanel = stockListPanel;
+
+        //-----------------------
 
         stock = new JLabel("Stock Code:");
         stock.setFont(new Font("Raleway", Font.BOLD, 15));
@@ -76,7 +88,19 @@ public class StockDetail extends JFrame implements ActionListener {
             else {
             	this.openNum = Double.parseDouble(openPrice.getText());
             	this.ticker = stockCode.getText();
-            	stockController.createStock(this.ticker, this.openNum);
+            	int rCode = stockController.createStock(this.ticker, this.openNum);
+                if (rCode == Constant.SUCCESS_CODE) {
+                    setVisible(false);
+                    List<bankUI.entity.Stock> stockList = new ArrayList<>();
+                    for(model.Stock s : stockController.getStockArrayList()) {
+                        //let Stock.name = model.Stock.ticker
+                        stockList.add(new bankUI.entity.Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
+                    }
+                    stockListPanel.resetData(stockList);
+                    JOptionPane.showMessageDialog(null, "Success");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please try it again");
+                }
             }
         
 	    } catch (Exception e) {
@@ -94,9 +118,5 @@ public class StockDetail extends JFrame implements ActionListener {
         Pattern pattern = Pattern.compile("[0-9]*");
         boolean checkValue = Double.parseDouble(o)>0;
         return pattern.matcher(o).matches() && checkValue;
-    }
-
-    public static void main(String[] args){
-        new StockDetail().setVisible(true);
     }
 }

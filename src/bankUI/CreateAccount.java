@@ -58,10 +58,10 @@ public class CreateAccount extends JFrame implements ActionListener {
         setLayout(null);
 
         account.setBounds(80,40,150,40);
-        add(account);
+        //add(account);
 
         accountID.setBounds(250, 40, 200, 40);
-        add(accountID);
+        //add(accountID);
 
         pin.setBounds(80, 100, 200, 40);
         add(pin);
