@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * page to make a transaction
+ */
 public class TransactionDetail extends JFrame implements ActionListener {
 
     private static Map<String, Double> cun;

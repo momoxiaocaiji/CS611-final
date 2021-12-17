@@ -14,6 +14,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * list panel for stock
+ */
 public class StockListPanel extends JPanel{
     private List<Stock> stockList;
     private int type;
@@ -66,12 +69,19 @@ public class StockListPanel extends JPanel{
         this(Constant.STOCK_MANAGER_CHECK);
     }
 
+    /**
+     * reset the data in the panel
+     * @param stockList
+     */
     public void resetData(List<Stock> stockList) {
         this.stockList = stockList;
         this.removeAll();
         fillPanel();
     }
 
+    /**
+     * fill the panel from stock list
+     */
     private void fillPanel() {
         setLayout(new GridLayout(stockList.size() + 1, 1));
         for(Stock s : stockList){

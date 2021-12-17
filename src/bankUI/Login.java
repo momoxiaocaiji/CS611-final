@@ -10,6 +10,9 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Login page
+ */
 public class Login extends JFrame implements ActionListener {
 
     private JLabel welcome,username,password;

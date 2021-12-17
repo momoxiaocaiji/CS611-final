@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.regex.Pattern;
 
+/**
+ * create Securities Account
+ */
 public class CreateSecuritiesAccount extends JFrame implements ActionListener {
 
     private JLabel account, accountID, investmentAmount, tips;

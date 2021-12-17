@@ -14,6 +14,9 @@ import java.util.*;
 import java.sql.Date;
 import java.util.regex.Pattern;
 
+/**
+ * Registration page
+ */
 public class Registry extends JFrame implements ActionListener {
 
     private JLabel title, realName, username, password, passwordConfirm, birthday, day, month, year, email;
@@ -233,6 +236,9 @@ public class Registry extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * check the two inputs of password is the same
+     */
     private void confirmThePassword() {
         Document doc = passwordConfirmField.getDocument();
         doc.addDocumentListener(new DocumentListener() {
@@ -282,6 +288,10 @@ public class Registry extends JFrame implements ActionListener {
         return point;
     }
 
+    /**
+     * verify the strength of the password
+     * @param jb
+     */
     private void verifyThePassword(JProgressBar jb) {
         Document d = passwordField.getDocument();
         d.addDocumentListener(new DocumentListener() {

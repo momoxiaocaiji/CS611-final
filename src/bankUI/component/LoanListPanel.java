@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * List Panel for loan
+ */
 public class LoanListPanel extends JPanel {
 
     private List<Loan> loanList;
@@ -56,12 +59,19 @@ public class LoanListPanel extends JPanel {
         this(Constant.LOAN_LIST);
     }
 
+    /**
+     * reset the data in the list panel
+     * @param loanList
+     */
     public void resetData(List<Loan> loanList) {
         this.loanList = loanList;
         this.removeAll();
         fillPanel();
     }
 
+    /**
+     * fill this panel from loan list
+     */
     private void fillPanel(){
         setLayout(new GridLayout(loanList.size() + 1, 1));
         for(Loan l : loanList){

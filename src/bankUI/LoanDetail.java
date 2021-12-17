@@ -10,6 +10,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Loan detail of the customer
+ */
 public class LoanDetail extends JFrame implements ActionListener {
 
     private List<Loan> loanList;

@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.regex.Pattern;
 
+/**
+ * create the saving / checking account
+ */
 public class CreateAccount extends JFrame implements ActionListener {
 
     private JLabel account, accountID, pin, tips;
@@ -106,6 +109,9 @@ public class CreateAccount extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * modify the pattern of pin Input according to the validation of pin
+     */
     private void checkPin(){
         Document doc = pinInput.getDocument();
         doc.addDocumentListener(new DocumentListener() {
@@ -138,6 +144,11 @@ public class CreateAccount extends JFrame implements ActionListener {
         });
     }
 
+    /**
+     * check the validation of pin
+     * @param pin
+     * @return
+     */
     private boolean validatePin(String pin){
         Pattern pattern = Pattern.compile("[0-9]*");
         return pattern.matcher(pin).matches() && pin.length() == 6;

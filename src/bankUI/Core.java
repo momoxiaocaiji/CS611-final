@@ -25,6 +25,9 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Main page for customer
+ */
 public class Core extends JFrame implements ActionListener {
 
     private JTabbedPane tabMenu;
@@ -244,10 +247,10 @@ public class Core extends JFrame implements ActionListener {
         }
     }
 
-    public void changeInfo(String test) {
-        amountNum.setText(test);
-    }
-
+    /**
+     * re fill the data in info tab
+     * @param userAccountInfo
+     */
     public void fillInfo(List userAccountInfo){
         // Checking
         checking.removeAll();
@@ -300,6 +303,12 @@ public class Core extends JFrame implements ActionListener {
         saving.revalidate();
     }
 
+    /**
+     * re fill the data in stock tab
+     * @param securitiesAccount
+     * @throws SQLException
+     * @throws Exception
+     */
     public void fillStock(SecuritiesAccount securitiesAccount) throws SQLException, Exception {
         stock.removeAll();
 

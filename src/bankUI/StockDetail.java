@@ -8,6 +8,9 @@ import java.util.regex.Pattern;
 
 import controller.StockController;
 
+/**
+ * page to create a stock
+ */
 public class StockDetail extends JFrame implements ActionListener {
 
     private JLabel stock, open;

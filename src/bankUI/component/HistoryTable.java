@@ -9,10 +9,17 @@ import java.util.List;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 
+/**
+ * Class for creating history table data
+ */
 public class HistoryTable extends JTable {
     private TableRowSorter<TableModel> sorter;
     private static String[] columns = {"TYPE", "SENDER", "CTYPE", "AMOUNT", "RECEIVER", "DATE"};
     private String[][] data;
+
+    /**
+     * @param transactionList
+     */
     public HistoryTable(List<Transaction> transactionList){
         data = new String[transactionList.size()][6];
         for (int i = 0 ; i < transactionList.size() ; i ++) {
@@ -59,6 +66,10 @@ public class HistoryTable extends JTable {
         return tip;
     }
 
+    /**
+     * reset the table data
+     * @param transactionList
+     */
     public void resetData(List<Transaction> transactionList) {
         data = new String[transactionList.size()][6];
         for (int i = 0 ; i < transactionList.size() ; i ++) {
@@ -79,6 +90,11 @@ public class HistoryTable extends JTable {
         setModel(dataModel);
         resetTable(this);
     }
+
+    /**
+     * set the pattern of this history table
+     * @param table
+     */
 
     private void resetTable(JTable table){
 

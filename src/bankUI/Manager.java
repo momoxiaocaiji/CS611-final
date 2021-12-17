@@ -6,6 +6,7 @@ import bankUI.component.StockListPanel;
 import bankUI.entity.Stock;
 import controller.BankManagerController;
 import controller.LoanController;
+import controller.StockController;
 import controller.TransactionController;
 import model.CheckingAccount;
 import model.Loan;
@@ -38,6 +39,7 @@ public class Manager extends JFrame implements ActionListener {
     private BankManagerController bankManagerController = new BankManagerController();
     private LoanController loanController = new LoanController();
     private TransactionController transactionController = new TransactionController();
+    private StockController stockController = new StockController();
 
     public Manager() throws Exception {
 
@@ -127,14 +129,18 @@ public class Manager extends JFrame implements ActionListener {
         // stock
         stock = new JPanel();
         stock.setLayout(null);
-//        List<Stock> stockList = new ArrayList<>();
-//        stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
-//        stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
-//        stockList.add(new Stock("AA", 5.0, 7.8, 4.3, 4.9));
-//        stockList.add(new Stock("BB", 5.0, 7.8, 4.3, 4.9));
-//        wholeStockList = new StockListPanel(stockList, Constant.STOCK_MANAGER_MODIFY);
-//        wholeStockList.setSize(900, 800);
-        //stock.add(wholeStockList);
+        stockController.getStockArrayList();
+        List<Stock> stockList = new ArrayList<>();
+        int i=0;
+        for(model.CustomerOwnedStock s : stockController.getCustomerStockArrayList(customerID.getText())) {
+            //let Stock.name = model.Stock.ticker
+            stockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
+            stockList.get(i).setNum(s.getQuantity());
+            stockList.get(i).setCost(s.getPurchasePrice());
+        }
+        wholeStockList = new StockListPanel(stockList, Constant.STOCK_MANAGER_MODIFY, null);
+        wholeStockList.setSize(900, 800);
+        stock.add(wholeStockList);
 
         // loanRequest
         loanRequest = new JPanel();
@@ -292,8 +298,13 @@ public class Manager extends JFrame implements ActionListener {
                 // stock
                 ownStock.removeAll();
                 List<Stock> stockList = new ArrayList<>();
-                stockList.add(new Stock("JJ", 10.0, 12.0, 9.0, 11.0));
-                stockList.add(new Stock("ZZ", 5.0, 7.8, 4.3, 4.9));
+                int i=0;
+                for(model.CustomerOwnedStock s : stockController.getCustomerStockArrayList(customerID.getText())) {
+                    //let Stock.name = model.Stock.ticker
+                    stockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
+                    stockList.get(i).setNum(s.getQuantity());
+                    stockList.get(i).setCost(s.getPurchasePrice());
+                }
                 ownStock.resetData(stockList);
                 // -------------------------------
 
