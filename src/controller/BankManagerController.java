@@ -47,4 +47,8 @@ public class BankManagerController {
         return bankManagerService.withdrawProfits(amount);
     }
 
+    public double getBankBalance() throws Exception {
+        return bankManagerService.getBankBalance();
+    }
+
 }

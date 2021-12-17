@@ -16,6 +16,18 @@ public class BankManagerService {
     LoginService loginService = new LoginService();
     AccountService accountService = new AccountService();
 
+    public double getBankBalance() throws Exception {
+        String query = "select * from bank limit 1;";
+        Connection connection = dbController.connectToDb();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+        double bankBalance = 0;
+        if(resultSet.next()){
+            bankBalance = resultSet.getDouble("bankBalance");
+        }
+        return bankBalance;
+    }
+
     public List<Stock> getAvailableStocks() throws Exception {
         String query = "select * from stock";
         Connection connection = dbController.connectToDb();

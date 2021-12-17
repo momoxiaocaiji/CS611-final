@@ -10,7 +10,6 @@ import model.SecuritiesAccount;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +62,6 @@ public class StockListPanel extends JPanel{
     private void fillPanel() {
         setLayout(new GridLayout(stockList.size() + 1, 1));
         for(Stock s : stockList){
-            // loan panel
             JPanel stockP = new JPanel();
             stockP.setLayout(new BorderLayout());
             stockP.setBorder(BorderFactory.createTitledBorder("Stock " + s.getName()));
@@ -80,7 +78,9 @@ public class StockListPanel extends JPanel{
             JLabel openPrice = new JLabel(String.valueOf(s.getOpen()));
             openPrice.setFont(new Font("Arial", Font.PLAIN, 16));
             detail.add(open);
-            detail.add(openPrice);
+            detail.add(openPrice);       
+            
+            
 
             JLabel current = new JLabel("Current Price: ");
             current.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 16));
@@ -110,8 +110,7 @@ public class StockListPanel extends JPanel{
             lowPrice.setFont(new Font("Arial", Font.PLAIN, 16));
             detail.add(low);
             detail.add(lowPrice);
-
-            if (type == Constant.STOCK_CUSTOMER_SALE || type == Constant.STOCK_MANAGER_CHECK) {
+            if ( type == Constant.STOCK_CUSTOMER_SALE || type == Constant.STOCK_MANAGER_CHECK) {
                 detail.setLayout(new GridLayout(3, 4));
                 JLabel cost = new JLabel("Cost: ");
                 cost.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 16));
@@ -136,47 +135,42 @@ public class StockListPanel extends JPanel{
                 op.setFont(new Font("Raleway", Font.BOLD, 14));
                 op.setBorder(BorderFactory.createLineBorder(Color.blue));
 
-//                op.addActionListener(e -> {
-//                	//sell: not enough #(open)
-//                    if (type == Constant.STOCK_CUSTOMER_SALE && Integer.parseInt(num.getText()) > s.getOpen()) {
-//                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
-//                    }
-//                	//buy: not enough #
-//                    else if(type == Constant.STOCK_CUSTOMER_BUY && Integer.parseInt(num.getText()) > s.getOpen()) {
-//                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
-//                    }
-//                    //buy: success
-//                    else if(type == Constant.STOCK_CUSTOMER_BUY) {
-//                        JOptionPane.showMessageDialog(null, "Buy complete");
-//                    	try {
-//							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
-//			    			se.buyStock(s.getCurrent(), Integer.parseInt(num.getText()));
-//						} catch (Exception e1) {
-//							e1.printStackTrace();
-//							System.out.println("error");
-//						}
-//                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
-//                    }
-//                    //sell: success
-//                    else if(type == Constant.STOCK_CUSTOMER_SALE) {
-//                        //change the displayed stats of the securities account, when type == SALE
-//                        JOptionPane.showMessageDialog(null, "Sell complete");
-//                        try {
-//							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
-//							//TODO a way to getPurchasePrice
-//							CustomerOwnedStock cStock = stockController.getCustomerStock(s.getName(), se.getCustomerId(), 20);
-//			    			se.sellStock(s.getCurrent(), s.getCurrent()-cStock.getPurchasePrice(), Integer.parseInt(num.getText()));
-//						} catch (Exception e1) {
-//							e1.printStackTrace();
-//							System.out.println("error");
-//						}
-//                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
-//                    }
-//                    //others
-//                    else {
-//
-//                    }
-//                });
+                op.addActionListener(e -> {
+                	//sell: not enough #(open)
+                    if (type == Constant.STOCK_CUSTOMER_SALE && Integer.parseInt(num.getText()) > s.getNum()) {
+                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
+                    }
+                    //buy: success
+                    else if(type == Constant.STOCK_CUSTOMER_BUY) {
+                        JOptionPane.showMessageDialog(null, "Buy complete");
+                    	try {
+							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
+			    			se.buyStock(s.getCurrent(), Integer.parseInt(num.getText()));
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							System.out.println("error");
+						}
+                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+                    }
+                    //sell: success
+                    else if(type == Constant.STOCK_CUSTOMER_SALE) {
+                        //change the displayed stats of the securities account, when type == SALE
+                        JOptionPane.showMessageDialog(null, "Sell complete");
+                        try {
+							stockController.sellStock(s, Integer.parseInt(num.getText()), se);
+							//TODO a way to getPurchasePrice
+							CustomerOwnedStock cStock = stockController.getCustomerStock(s.getName(), se.getCustomerId());
+			    			se.sellStock(s.getCurrent(), s.getCurrent()-cStock.getPurchasePrice(), Integer.parseInt(num.getText()));
+						} catch (Exception e1) {
+							System.out.println(e1+"error");
+						}
+                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+                    }
+                    //others
+                    else {
+
+                    }
+                });
 
                 operationPanel.add(num);
                 operationPanel.add(op);
@@ -221,7 +215,7 @@ public class StockListPanel extends JPanel{
             JButton addB = new JButton("+ Add a new stock");
             add(addB);
             addB.addActionListener( e -> {
-                new StockDetail("111111").setVisible(true);
+                new StockDetail().setVisible(true);
             });
         } else {
             JPanel empty = new JPanel();

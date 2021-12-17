@@ -13,7 +13,6 @@ import controller.*;
 //always access model.Stock as model.Stock to avoid colliding with entity.Stock
 import model.*;
 
-import javax.jws.Oneway;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -78,18 +77,18 @@ public class Core extends JFrame implements ActionListener {
 
         // -----------------------------------------
         // stock
-//        stock = new JPanel();
-//        stock.setLayout(new BorderLayout());
-//        SecuritiesAccount se = accountController.getSecuritiesAccountInfo(username);
-//        // user doesn't have a securities account.
-//        if (se == null) {
-//            createSecurities = new JButton("+ Create New Account");
-//            stock.add(createSecurities, BorderLayout.NORTH);
-//            createSecurities.setPreferredSize(new Dimension(0, 120));
-//            createSecurities.addActionListener(this);
-//        } else {
-//            fillStock(se);
-//        }
+        stock = new JPanel();
+        stock.setLayout(new BorderLayout());
+        SecuritiesAccount se = accountController.getSecuritiesAccountInfo(username);
+        // user doesn't have a securities account.
+        if (se == null) {
+            createSecurities = new JButton("+ Create New Account");
+            stock.add(createSecurities, BorderLayout.NORTH);
+            createSecurities.setPreferredSize(new Dimension(0, 120));
+            createSecurities.addActionListener(this);
+        } else {
+            fillStock(se);
+        }
 
 
         // -----------------------------------------
@@ -317,7 +316,7 @@ public class Core extends JFrame implements ActionListener {
         JLabel realized = new JLabel("Realized Profit: ");
         realized.setFont(new Font("Andale Mono", Font.BOLD, 16));
         //TODO getRealized profit
-        realizedNum = new JLabel("$20.0");
+        realizedNum = new JLabel(String.valueOf(securitiesAccount.getRealizedProfit()));
         realizedNum.setFont(new Font("Arial", Font.PLAIN, 16));
         securitiesAccountPanel.add(realized);
         securitiesAccountPanel.add(realizedNum);
@@ -325,7 +324,7 @@ public class Core extends JFrame implements ActionListener {
         JLabel unrealized = new JLabel("Unrealized Profit: ");
         unrealized.setFont(new Font("Andale Mono", Font.BOLD, 16));
         //TODO getUnrealized profit
-        unrealizedNum = new JLabel("$20.0");
+        unrealizedNum = new JLabel(String.valueOf(securitiesAccount.getUnrealizedProfit()));
         unrealizedNum.setFont(new Font("Arial", Font.PLAIN, 16));
         securitiesAccountPanel.add(unrealized);
         securitiesAccountPanel.add(unrealizedNum);
@@ -341,8 +340,8 @@ public class Core extends JFrame implements ActionListener {
         buyStock.setLayout(new BorderLayout());
         List<Stock> stockList = new ArrayList<>();
         //TODO where to call createStock, how to combine with date
-        stockController.createStock("AAA", "A1234", 1000, 15, 7, 9, null);
-        stockController.createStock("BBB", "B1234", 600, 40, 30, 30, null);
+        stockController.createStock("AAA", "A1234", 10, 15, 7, 9, null);
+        stockController.createStock("BBB", "B1234", 20, 40, 30, 30, null);
         for(model.Stock s : stockController.getStockArrayList()) {
         	//let Stock.name = model.Stock.ticker
         	stockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
@@ -355,11 +354,16 @@ public class Core extends JFrame implements ActionListener {
         buyList.setAssoFrame(this);
 
         // TODO update data display on sell
-        stockList.get(0).setCost(9.0);
-        stockList.get(0).setNum(100);
-        stockList.get(1).setCost(8.0);
-        stockList.get(1).setNum(200);
-        StockListPanel saleList = new StockListPanel(stockList, Constant.STOCK_CUSTOMER_SALE, securitiesAccount);
+        List<Stock> customerStockList = new ArrayList<>();
+        //TODO where to call createStock, how to combine with date
+        int i=0;
+        for(model.CustomerOwnedStock s : stockController.getCustomerStockArrayList(username)) {
+        	//let Stock.name = model.Stock.ticker
+        	customerStockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
+        	customerStockList.get(i).setNum(s.getQuantity());
+        	customerStockList.get(i).setCost(s.getPurchasePrice());
+        }
+        StockListPanel saleList = new StockListPanel(customerStockList, Constant.STOCK_CUSTOMER_SALE, securitiesAccount);
         saleList.setPreferredSize(new Dimension(750, 650));
         saleStock.add(saleList);
         saleList.setAssoFrame(this);
