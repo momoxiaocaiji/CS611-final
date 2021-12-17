@@ -13,7 +13,6 @@ import controller.*;
 //always access model.Stock as model.Stock to avoid colliding with entity.Stock
 import model.*;
 
-import javax.jws.Oneway;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
