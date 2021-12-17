@@ -155,4 +155,19 @@ public class BankManagerService {
 
     }
 
+    public int withdrawProfits(double amount) throws Exception{
+        Connection connection = dbController.connectToDb();
+        String query = "select * from bank limit 1;";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+        double bankbalance = 0;
+        if(resultSet.next()) {
+            bankbalance = resultSet.getDouble("bankBalance");
+        }
+
+        String update = "update bank set bankBalance="+(bankbalance-amount)+" where bankId="+bankConstants.getDEFAULT_BANKID();
+        int count = statement.executeUpdate(update);
+        return (count>0)?bankConstants.getSUCCESS_CODE(): bankConstants.getERROR();
+    }
+
 }

@@ -170,6 +170,30 @@ public class TransactionService {
         System.out.println("transaction fees of "+(bankConstants.getTRANSACTION_CHARGE_RATE()*amount/100)+"collected");
     }
 
+    public List<Transaction> getDailyReportForCustomer(String customerId) throws Exception{
+        List<Transaction> transactionList = new ArrayList<>();
+        String query = "select * from transaction where customerId='"+customerId+"';";
+        Connection connection = dbController.connectToDb();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        while (resultSet.next()){
+            Transaction transaction = new Transaction();
+            transaction.setTransactionId(resultSet.getInt("transactionId"));
+            transaction.setCustomerId(resultSet.getString("customerId"));
+            transaction.setTransactionType(resultSet.getString("transactionType"));
+            transaction.setAmount(resultSet.getDouble("amount"));
+            transaction.setCurrency(resultSet.getString("currency"));
+            transaction.setDate(resultSet.getDate("txDate"));
+            transaction.setSourceAccountId(resultSet.getString("sourceAccount"));
+            transaction.setDestinationAccountId(resultSet.getString("destAccount"));
+
+            transactionList.add(transaction);
+
+        }
+        return transactionList;
+    }
+
     public List<Transaction> getDailyReport(String date) throws Exception {
         List<Transaction> transactionList = new ArrayList<>();
         String query = "select * from transaction where txDate='"+date+"';";
@@ -195,34 +219,82 @@ public class TransactionService {
 
 
     //function to withdraw money
-    public int makeWithdrawal(String customerId,String accountId,String accountType,double amount) throws Exception {
-        return makePayment(customerId,accountId,accountType,amount);
+    public int makeWithdrawal(String customerId,String accountId,String accountType,double amount,String currency) throws Exception {
+        return makePayment(customerId,accountId,accountType,amount,currency);
     }
 
 
     //function to deposit money
-    public int makeDeposit(String customerId,String accountId,String accountType,double amount) throws Exception {
+    public int makeDeposit(String customerId,String accountId,String accountType,double amount,String currency) throws Exception {
         Connection connection = dbController.connectToDb();
         if(accountType.equalsIgnoreCase("saving")){
             String query = "select * from saving_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
-            if(resultSet.next()){
-                double amt = resultSet.getDouble("amount")+amount;
-                String update = "update saving_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+            ResultSet account = null; int accountNum=0,pin=0;
+            int currencyAvailable = 0;
+            while (resultSet.next()){
+                if(currency.equalsIgnoreCase(resultSet.getString("currency"))) {
+                    currencyAvailable = 1;
+                    account = resultSet;
+                    break;
+                }
+                accountNum = resultSet.getInt("accountNum");
+                pin = resultSet.getInt("pin");
+            }
+
+            if(currencyAvailable==1){
+                double total = account.getDouble("amount")+amount;
+                String update = "update saving_account set amount="+total+" where customerId='"+customerId+" and accountId='"+accountId+" and currency='"+currency+"';";
                 statement.executeUpdate(update);
-                System.out.println("deposited");
+                return bankConstants.getSUCCESS_CODE();
+            }else if(currencyAvailable==0) {
+                String insert = "INSERT into saving_account(customerId,accountId,accountNum,amount,currency,pin) VALUES(?,?,?,?,?,?);";
+                PreparedStatement preparedStatement = connection.prepareStatement(insert);
+                preparedStatement.setString(1,customerId);
+                preparedStatement.setString(2,accountId);
+                preparedStatement.setInt(3,accountNum);
+                preparedStatement.setDouble(4,amount);
+                preparedStatement.setString(5,currency);
+                preparedStatement.setInt(6,pin);
+
+                preparedStatement.executeUpdate();
                 return bankConstants.getSUCCESS_CODE();
             }
+
         }else{
             String query = "select * from checking_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
-            if(resultSet.next()){
-                double amt = resultSet.getDouble("amount")+amount;
-                String update = "update checking_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+            ResultSet account = null; int accountNum=0, pin=0;
+            int currencyAvailable = 0;
+            while (resultSet.next()){
+                if(currency.equalsIgnoreCase(resultSet.getString("currency"))) {
+                    currencyAvailable = 1;
+                    account = resultSet;
+                    break;
+                }
+                accountNum = resultSet.getInt("accountNum");
+                pin = resultSet.getInt("pin");
+
+            }
+
+            if(currencyAvailable==1){
+                double total = account.getDouble("amount")+amount;
+                String update = "update checking_account set amount="+total+" where customerId='"+customerId+" and accountId='"+accountId+" and currency='"+currency+"';";
                 statement.executeUpdate(update);
-                System.out.println("deposited");
+                return bankConstants.getSUCCESS_CODE();
+            }else if(currencyAvailable==0) {
+                String insert = "INSERT into checking_account(customerId,accountId,accountNum,amount,currency,pin) VALUES(?,?,?,?,?,?);";
+                PreparedStatement preparedStatement = connection.prepareStatement(insert);
+                preparedStatement.setString(1,customerId);
+                preparedStatement.setString(2,accountId);
+                preparedStatement.setInt(3,accountNum);
+                preparedStatement.setDouble(4,amount);
+                preparedStatement.setString(5,currency);
+                preparedStatement.setInt(6,pin);
+
+                preparedStatement.executeUpdate();
                 return bankConstants.getSUCCESS_CODE();
             }
         }
@@ -230,7 +302,7 @@ public class TransactionService {
     }
 
     //function to make payment
-    public int makePayment(String customerId,String accountId,String accountType,double amount) throws Exception {
+    public int makePayment(String customerId,String accountId,String accountType,double amount,String currency) throws Exception {
         Connection connection = dbController.connectToDb();
         if(accountType.equalsIgnoreCase("saving")){
             String query = "select * from saving_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
@@ -242,7 +314,7 @@ public class TransactionService {
                     return bankConstants.getINSUFFICIENT_FUNDS();
                 }else {
                     double amt = resultSet.getDouble("amount")-amount;
-                    String update = "update saving_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    String update = "update saving_account set amount="+amt+" where currency='"+currency+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
                     statement.executeUpdate(update);
                     System.out.println("withdrawn");
                     return bankConstants.getSUCCESS_CODE();
@@ -258,7 +330,7 @@ public class TransactionService {
                     return bankConstants.getINSUFFICIENT_FUNDS();
                 }else {
                     double amt = resultSet.getDouble("amount")-amount;
-                    String update = "update checking_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    String update = "update checking_account set amount="+amt+" where currency='"+currency+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
                     statement.executeUpdate(update);
                     System.out.println("withdrawn");
                     return bankConstants.getSUCCESS_CODE();

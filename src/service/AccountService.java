@@ -49,6 +49,7 @@ public class AccountService {
                     int count = insertIntoCheckingOrSaving(connection,customer,"SAVING",pin);
                     if(count!=0) {
                         //successfully created saving account
+                        payBankFees(80, bankConstants.getDEFAULT_BANKID());
                         responseStatus = bankConstants.getSUCCESS_CODE();
                     }else {
                         responseStatus = bankConstants.getERROR();
@@ -65,6 +66,7 @@ public class AccountService {
                     int count = insertIntoCheckingOrSaving(connection,customer,"CHECKING",pin);
                     if(count!=0) {
                         //successfully created saving account
+                        payBankFees(80, bankConstants.getDEFAULT_BANKID());
                         responseStatus = bankConstants.getSUCCESS_CODE();
                     }else {
                         responseStatus = bankConstants.getERROR();
@@ -116,7 +118,7 @@ public class AccountService {
                 preparedStatement.setString(3,customer.getCustomerId());
                 preparedStatement.setInt(4,pin);
                 preparedStatement.setString(5,"USD");
-                preparedStatement.setDouble(6,100.0);
+                preparedStatement.setDouble(6,80.0);
                 status= preparedStatement.executeUpdate();
                 break;
             case "CHECKING" :
@@ -163,8 +165,8 @@ public class AccountService {
     public List<Object> getAccountInfoForCustomer(Customer customer) throws Exception {
         Connection connection = dbController.connectToDb();
         List<Object> accounts = new ArrayList<>();
-        CheckingAccount checkingAccount = new CheckingAccount();
-        SavingAccount savingAccount = new SavingAccount();
+
+
         //1.get checking account
         boolean checkingExists = doesCheckingAccountExist(connection,customer);
         boolean savingExists = doesSavingAccountExist(connection,customer);
@@ -173,22 +175,58 @@ public class AccountService {
             return new ArrayList<>();
 
         if(checkingExists) {
+            CheckingAccount checkingAccount = new CheckingAccount();
             String query = "SELECT * from checking_account where customerId='"+customer.getCustomerId()+"' and accountNum="+customer.getPersonId()+";";
             Statement statement = connection.createStatement();
+            Map<String,Double> moneyMap = new HashMap<>();
             ResultSet resultSet = statement.executeQuery(query);
-            if(resultSet!=null && resultSet.next()) {
+            while (resultSet!=null && resultSet.next()) {
                 checkingAccount.setAccountId(resultSet.getString("accountId"));
                 checkingAccount.setAccountNum(String.valueOf(resultSet.getInt("accountNum")));
                 checkingAccount.setCustomerId(customer.getCustomerId());
                 checkingAccount.setAmount(resultSet.getDouble("amount"));
                 checkingAccount.setCurrency(resultSet.getString("currency"));
                 checkingAccount.setPin(resultSet.getInt("pin"));
-                Map<String,Double> map = new HashMap<>();
-                map.put(checkingAccount.getCurrency(),checkingAccount.getAmount());
-                checkingAccount.setMoney(map);
+                //Map<String,Double> map = new HashMap<>();
+                //map.put(checkingAccount.getCurrency(),checkingAccount.getAmount());
+                //checkingAccount.setMoney(map);
+                moneyMap.put(checkingAccount.getCurrency(),checkingAccount.getAmount());
             }
+            checkingAccount.setMoney(moneyMap);
+            accounts.add(checkingAccount);
         }
 
+        if(savingExists) {
+            SavingAccount savingAccount = new SavingAccount();
+            String query = "SELECT * from saving_account where customerId='"+customer.getCustomerId()+"' and accountNum="+customer.getPersonId()+";";
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            Map<String,Double> moneyMap = new HashMap<>();
+            if(resultSet!=null && resultSet.next()) {
+                savingAccount.setAccountId(resultSet.getString("accountId"));
+                savingAccount.setAccountNum(String.valueOf(resultSet.getInt("accountNum")));
+                savingAccount.setCustomerId(customer.getCustomerId());
+                savingAccount.setAmount(resultSet.getDouble("amount"));
+                savingAccount.setCurrency(resultSet.getString("currency"));
+                savingAccount.setPin(resultSet.getInt("pin"));
+                //Map<String,Double> map = new HashMap<>();
+                //map.put(savingAccount.getCurrency(),savingAccount.getAmount());
+                //savingAccount.setMoney(map);
+                moneyMap.put(savingAccount.getCurrency(),savingAccount.getAmount());
+            }
+            savingAccount.setMoney(moneyMap);
+            accounts.add(savingAccount);
+        }
+
+        return accounts;
+
+    }
+    
+    //get
+    public SavingAccount getSavingAccountInfoForCustomer(Customer customer) throws Exception {
+    	Connection connection = dbController.connectToDb();
+    	boolean savingExists = doesSavingAccountExist(connection,customer);
+        SavingAccount savingAccount = new SavingAccount();
         if(savingExists) {
             String query = "SELECT * from saving_account where customerId='"+customer.getCustomerId()+"' and accountNum="+customer.getPersonId()+";";
             Statement statement = connection.createStatement();
@@ -205,41 +243,39 @@ public class AccountService {
                 savingAccount.setMoney(map);
             }
         }
-
-        accounts.add(checkingAccount);
-        accounts.add(savingAccount);
-
-        return accounts;
-
+    	return savingAccount;
     }
 
     //create Securities account
-    public int createNewSecuritiesAccount (Customer customer, double depositAmount, double savingAmount) throws Exception, SQLException{
+    public int createNewSecuritiesAccount (Customer customer, double depositAmount) throws Exception, SQLException{
     	int responseStatus = 0;
     	Connection connection = dbController.connectToDb();
     	//check whether the account already exist
     	boolean accountExists = doesSecuritiesAccountExist(connection,customer);
     	//check prerequisites of creating a SecuritiesAccount
-        if(!accountExists && savingAmount>=5000 && savingAmount-depositAmount>=2500){
+    	//disable condition: savingAmount>=5000 && savingAmount-depositAmount>=2500; TODO && depositAmount>=1000
+        if(!accountExists && doesSavingAccountExist(connection, customer) ){
+            SavingAccount savingAccount = getSavingAccountInfoForCustomer(customer);
+        	savingAccount.setAmount(savingAccount.getAmount()-depositAmount);
             //insert into account
         	Statement statement = connection.createStatement();
         	//generate the unique hash code
         	int accountId = Objects.hash("SECURITIES",customer.getPersonId());
             int rowCount = statement.executeUpdate("INSERT INTO securities_account (`accountId`, `customerId`, `investmentAmount`) "
-            		+ "VALUES ("+accountId+","+customer.getCustomerId()+","+depositAmount+");");
+            		+ "VALUES ("+accountId+", '"+customer.getCustomerId()+"',"+depositAmount+");");
             if(rowCount!=0) {
                 //successfully created saving account
-
                 responseStatus = bankConstants.getSUCCESS_CODE();
             }else {
                 responseStatus = bankConstants.getERROR();
             }
         }else {
-        	// TODO accountExists, or deposit amount illegal
+        	// accountExists, no saving account, or deposit amount illegal
             responseStatus = bankConstants.getSERVER_ERROR();
         }
     	return responseStatus;
     }
+    
     //return the SecuritiesAccount of this customer
     public SecuritiesAccount getSecuritiesInfo(Customer customer) throws Exception {
     	//connection with DB
@@ -250,7 +286,7 @@ public class AccountService {
         boolean securitiesExists = doesSecuritiesAccountExist(connection,customer);
         if(securitiesExists) {
         	//SQL query to get customer's security account by customerID
-            String query = "SELECT * from securities_account where customerId="+customer.getCustomerId()+" and accountId="+customer.getPersonId()+";";
+            String query = "SELECT * from securities_account where customerId='"+customer.getCustomerId()+"' and accountId="+Objects.hash("SECURITIES",customer.getPersonId())+";";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
             resultSet.next();
@@ -261,7 +297,7 @@ public class AccountService {
         }
         else {
         	//account does not exist!
-        	//TODO alert message
+        	return null;
         }
     	//return
     	return securitiesAccount;
@@ -269,8 +305,8 @@ public class AccountService {
 
     //check doesSecuritiesAccountExist with customerId and accountId
     public Boolean doesSecuritiesAccountExist(Connection connection, Customer customer) throws SQLException{
-        int accountId = Objects.hash("CHECK",customer.getPersonId());
-        String query = "select * from securities_account where customerId="+customer.getPersonId()+" and accountId="+accountId;
+        int accountId = Objects.hash("SECURITIES",customer.getPersonId());
+        String query = "select * from securities_account where customerId='"+customer.getCustomerId()+"' and accountId="+accountId;
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
 
@@ -318,5 +354,65 @@ public class AccountService {
                 return new Object();
             }
         }
+    }
+
+    public Customer getCustomerDetails(String customerId) throws Exception {
+        Connection connection = dbController.connectToDb();
+        String query = "select customer.customerId,cust_person.personId,name,email,dob from customer,cust_person,person where customer.customerId = cust_person.customerId and person.personId = cust_person.personId and customer.customerId = '"+customerId+"';";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        Customer customer = null;
+        while(resultSet.next()) {
+            customer = new Customer();
+            customer.setCustomerId(customerId);
+            customer.setPersonId(resultSet.getInt("personId"));
+            customer.setName(resultSet.getString("name"));
+            customer.setEmail(resultSet.getString("email"));
+            customer.setDob(resultSet.getDate("dob"));
+        }
+
+        return customer;
+    }
+
+    public Object chooseBestAccount(String customerId,double amount) throws Exception {
+        Customer customer = getCustomerDetails(customerId);
+        List<Object> accounts = getAccountInfoForCustomer(customer);
+        if(accounts!=null || !accounts.isEmpty()) {
+            for(Object obj : accounts) {
+                if(obj instanceof CheckingAccount) {
+                    CheckingAccount checkingAccount=(CheckingAccount) obj;
+                    double balance = checkingAccount.getAmount();
+                    if(balance>=amount)
+                        return checkingAccount;
+                }else {
+                    SavingAccount savingAccount = (SavingAccount) obj;
+                    double balance = savingAccount.getAmount();
+                    if(balance>=amount)
+                        return savingAccount;
+                }
+            }
+        }else{
+            return null;
+        }
+
+        return null;
+    }
+
+    public void payBankFees(double amount,int bankId) throws Exception {
+        Connection connection = dbController.connectToDb();
+        Statement statement = connection.createStatement();
+        String query = "select * from bank where bankId ="+bankId;
+        ResultSet resultSet = statement.executeQuery(query);
+        double bankBalance = 0;
+        while (resultSet.next()){
+            bankBalance = resultSet.getDouble("bankBalance")+((bankConstants.getTRANSACTION_CHARGE_RATE()*amount)/100);
+            break;
+        }
+
+        String update = "UPDATE bank set bankBalance="+bankBalance+" where bankId ="+bankId;
+        Statement statement1 = connection.createStatement();
+        int count = statement1.executeUpdate(update);
+        System.out.println("transaction fees of "+(bankConstants.getTRANSACTION_CHARGE_RATE()*amount/100)+"collected");
     }
 }

@@ -44,14 +44,15 @@ public class StockService {
      * 
      * @return ArrayList<CustomerOwnedStock>
      */
-    public ArrayList<CustomerOwnedStock> getCustomerStockArrayList() throws Exception, SQLException{
+    public ArrayList<CustomerOwnedStock> getCustomerStockArrayList(String customerId) throws Exception, SQLException{
     	ArrayList<CustomerOwnedStock> customerOwnedStock = new ArrayList<CustomerOwnedStock>(); 
     	Connection connection = dbController.connectToDb();
     	Statement statement = connection.createStatement();
-    	String query = "SELECT stockId, customerId, purchasePrice FROM customer_owned_stock";
+    	String query = "SELECT stockId, customerId, purchasePrice FROM customer_owned_stock"+
+        		" WHERE customerId='"+customerId+"'; ";
     	ResultSet resultSet = statement.executeQuery(query);
     	while(resultSet.next()) {
-    		customerOwnedStock.add(getCustomerStock( getStock(resultSet.getInt("stockId")).getTicker(), resultSet.getString("customerId"), resultSet.getDouble("purchasePrice")));
+    		customerOwnedStock.add(getCustomerStock( getStock(resultSet.getInt("stockId")).getTicker(), resultSet.getString("customerId")));
     	}
     	return customerOwnedStock;
     }
@@ -111,7 +112,7 @@ public class StockService {
     	if(stockExists) {
     		String query = "DELECT * from stock where ticker='"+ticker+"';";
             Statement statement = connection.createStatement();
-            statement.executeQuery(query);
+            statement.executeUpdate(query);
     	}
     	
 	}
@@ -202,20 +203,19 @@ public class StockService {
 		//check stock exist
     	Connection connection = dbController.connectToDb();
     	if(checkIfStockExist(connection, stock.getTicker()) == true) {
-    		//check stock have open>0, have enough money in securities
-    		if(stock.getOpen()>quantity && securitiesAccount.getInvestmentAmount()>=(quantity*stock.getPrice())) {
+    		//have enough money in securities
+    		if(securitiesAccount.getInvestmentAmount()>=(quantity*stock.getPrice())) {
         		//check exist in customer Stock, which mean price = purchasePrice; if so, just ++quantity
-        		if(checkIfCustomerStockExist(connection, stock.getStockId(), securitiesAccount.getCustomerId(), stock.getPrice())==true) {
+        		if(checkIfCustomerStockExist(connection, stock.getStockId(), securitiesAccount.getCustomerId())==true) {
         			//UPDATE customer_owned_stock(`quantity`)
-        			String query1 = "UPDATE customer_owned_stock SET quantity=quantity"+quantity+
+        			String query0 = "UPDATE customer_owned_stock SET quantity=quantity+"+quantity+
     		        		" WHERE customerId='"+securitiesAccount.getCustomerId()+"' AND stockId="+stock.getStockId()+" AND purchasePrice="+stock.getPrice()
     		        				+ "; ";
         			Statement stmt = connection.createStatement();
-        			stmt.executeQuery(query1);
-                    String query = "UPDATE stock SET open = open-"+stock.getOpen()+" WHERE stockId="+stock.getStockId()+";"
-							+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount-"+quantity*stock.getPrice()
-								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
-        			stmt.executeQuery(query);
+        			stmt.executeUpdate(query0);
+                    String query1 =  "UPDATE securities_account SET investmentAmount = investmentAmount-"+(quantity*stock.getPrice())
+                    			+ " WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
+        			stmt.executeUpdate(query1);
         		}
         		else {
         			//INSERT new row, 5 values. does the order matter?
@@ -230,11 +230,10 @@ public class StockService {
                     preparedStatement1.setDate(4, sqlDate);
                     preparedStatement1.setDouble(5, stock.getPrice());
                     int rowCount = preparedStatement1.executeUpdate();
-                    String query = "UPDATE stock SET open = open-"+stock.getOpen()+" WHERE stockId="+stock.getStockId()+";"
-							+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount-"+quantity*stock.getPrice()
+                    String query = "UPDATE securities_Account SET investmentAmount = investmentAmount-"+quantity*stock.getPrice()
 								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
         			Statement stmt = connection.createStatement();
-        			stmt.executeQuery(query);
+        			stmt.executeUpdate(query);
                     
                     if(rowCount!=0) {
                         //successfully created stock
@@ -262,26 +261,25 @@ public class StockService {
 		Statement statement = connection.createStatement();
 		//check stock exist
 		boolean existInStock = checkIfStockExist(connection, cStock.getTicker());
-		boolean existInCustomerStock = checkIfCustomerStockExist(connection, cStock.getStockId(), securitiesAccount.getCustomerId(), cStock.getPurchasePrice());
+		boolean existInCustomerStock = checkIfCustomerStockExist(connection, cStock.getStockId(), securitiesAccount.getCustomerId());
 		if(existInStock && existInCustomerStock) {
-			if(cStock.getQuantity()>sellQuantity) {
+			//TODO update securitiesAccount.realizedProfit
+			if(cStock.getQuantity()>sellQuantity && cStock.getQuantity()>0) {
 				//sell some
-				//cStock.quantity --; stock.open++; securitiesAccount.amount++
+				//cStock.quantity --;securitiesAccount.amount++
 		        String query = "UPDATE customer_owned_stock SET quantity = quantity-"+sellQuantity+
 		        		" WHERE customerId='"+cStock.getCustomerId()+"' AND stockId="+cStock.getStockId()+" AND purchasePrice="+cStock.getPurchasePrice()+";"
-		        				+ "UPDATE stock SET open = open+"+sellQuantity+" WHERE stockId="+cStock.getStockId()+";"
-		        						+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
+		        						+ "UPDATE securities_Account SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
 		        								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
-				statement.executeQuery(query);
+				statement.executeUpdate(query);
 			}
 			else if(cStock.getQuantity()==sellQuantity) {
 				//sell all
-				//removeCustomerStock; stock.open++; securitiesAccount.amout++
+				//removeCustomerStock; securitiesAccount.amout++
 				removeCustomerStock(cStock, securitiesAccount.getCustomerId());
-				String query = "UPDATE stock SET open = open+"+sellQuantity+" WHERE stockId="+cStock.getStockId()+";"
-							+ "UPDATE securitiesAccount SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
+				String query = "UPDATE securities_Account SET investmentAmount = investmentAmount+"+sellQuantity*cStock.getPrice()
 								+ "WHERE customerId='"+securitiesAccount.getCustomerId()+"';";
-				statement.executeQuery(query);
+				statement.executeUpdate(query);
 			}
 			else {
 				//illeagal value of sellQuantity
@@ -298,10 +296,9 @@ public class StockService {
 		//check whether this stock already exist
     	boolean stockExists = checkIfStockExist(connection, cStock.getTicker());
     	if(stockExists) {
-    		String query = "DELECT * from customer_owned_stock "
-    				+ "where stockId='"+cStock.getStockId()+"' and customerId='"+customerId+"' and purchasedPrice="+cStock.getPurchasePrice()+";";
+    		String query = "DELETE from customer_owned_stock where stockId='"+cStock.getStockId()+"' and customerId='"+customerId+"';";
             Statement statement = connection.createStatement();
-            statement.executeQuery(query);
+            statement.executeUpdate(query);
     	}
 	}
 
@@ -311,15 +308,15 @@ public class StockService {
 	 * @param String ticker, String customerId, double purchasedPrice
 	 * @return CustomerOwnedStock 
 	 */
-	public CustomerOwnedStock getCustomerStock(String ticker, String customerId, double purchasePrice) throws Exception, SQLException {
+	public CustomerOwnedStock getCustomerStock(String ticker, String customerId) throws Exception, SQLException {
     	//connection with DB
     	Connection connection = dbController.connectToDb();
     	CustomerOwnedStock tempStock = new CustomerOwnedStock();
 		//SQL query to get customer's security account by customerID
     	if(checkIfStockExist(connection, ticker)==true) {
-    		if(checkIfCustomerStockExist(connection, getStock(ticker).getStockId(), customerId, purchasePrice)==true) {
+    		if(checkIfCustomerStockExist(connection, getStock(ticker).getStockId(), customerId)==true) {
 	            String query = "SELECT * from customer_owned_stock "
-	            		+ "where stockId="+getStock(ticker).getStockId()+" and customerId='"+customerId+"' and purchasePrice="+purchasePrice+";";
+	            		+ "where stockId="+getStock(ticker).getStockId()+" and customerId='"+customerId+"';";
 	            Statement statement = connection.createStatement();
 	            ResultSet resultSet = statement.executeQuery(query);
 	            resultSet.next();
@@ -331,6 +328,16 @@ public class StockService {
 	    		tempStock.setPurchasePrice(resultSet.getDouble("purchasePrice"));
 	    		tempStock.setPurchaseDate(resultSet.getDate("purchaseDate"));
 	    		tempStock.setUnrealizedProfit(getStock(ticker));
+	            String query1 = "SELECT * from stock "
+	            		+ "where stockId="+getStock(ticker).getStockId()+";";
+	            ResultSet resultSet1 = statement.executeQuery(query1);
+	            resultSet1.next();
+	    		tempStock.setOpen(resultSet1.getInt("open"));
+	    		tempStock.setHigh(resultSet1.getDouble("high"));
+	    		tempStock.setLow(resultSet1.getDouble("low"));
+	    		tempStock.setStockName(resultSet1.getString("stockName"));
+	    		tempStock.setPrice(resultSet1.getDouble("price"));
+	    		tempStock.setDate(resultSet1.getDate("date"));
     		}
     		else{
     			//not exist in customer_owned_stock
@@ -346,8 +353,8 @@ public class StockService {
 	 * @return boolean
 	 * 
 	 */
-	public boolean checkIfCustomerStockExist(Connection connection, int stockId, String customerId,  double purchasedPrice) throws SQLException{
-        String query = "SELECT * from customer_owned_stock WHERE stockId="+stockId+" and customerId='"+customerId+"' and purchasePrice="+purchasedPrice;
+	public boolean checkIfCustomerStockExist(Connection connection, int stockId, String customerId) throws SQLException{
+        String query = "SELECT * from customer_owned_stock WHERE stockId="+stockId+" and customerId='"+customerId+"'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         if(resultSet==null || !resultSet.next()) {

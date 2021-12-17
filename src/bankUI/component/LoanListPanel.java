@@ -1,7 +1,10 @@
 package bankUI.component;
 
 import bankUI.Constant;
+import bankUI.Core;
+import controller.AccountController;
 import controller.LoanController;
+import controller.TransactionController;
 import model.Loan;
 
 import javax.swing.*;
@@ -15,9 +18,29 @@ public class LoanListPanel extends JPanel {
 
     private List<Loan> loanList;
     private int type;
+    private String username;
+    private Core core;
 
     // MVC
     private LoanController loanController = new LoanController();
+    private TransactionController transactionController = new TransactionController();
+    private AccountController accountController = new AccountController();
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Core getCore() {
+        return core;
+    }
+
+    public void setCore(Core core) {
+        this.core = core;
+    }
 
     public LoanListPanel(List<Loan> loanList, int type) {
         this.loanList = loanList;
@@ -91,7 +114,22 @@ public class LoanListPanel extends JPanel {
                 }
                 op.addActionListener(e -> {
                     if (type == Constant.LOAN_CUSTOMER) {
-
+                        try {
+                            int rCode = transactionController.payLoan(username, l.getLoanId(), l.getPrincipalAmount());
+                            if (rCode == Constant.INSUFFICIENT_FUNDS) {
+                                JOptionPane.showMessageDialog(null, "You don't have enough money.");
+                            } else if (rCode == Constant.SUCCESS_CODE) {
+                                JOptionPane.showMessageDialog(null, "Success!!");
+                                loanList = loanController.getAllLoans().stream().filter(loan -> loan.getIsLoanApproved() == 0)
+                                        .collect(Collectors.toList());
+                                this.removeAll();
+                                fillPanel();
+                                this.revalidate();
+                                core.fillInfo(accountController.getAccountInfoForCustomer(username));
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     } else {
                         try {
                             int rCode = loanController.makeLoanDecision(l.getLoanId());

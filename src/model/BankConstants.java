@@ -1,7 +1,7 @@
 package model;
 
 public class BankConstants {
-    private final String DBURL = "jdbc:mysql://127.0.0.1:3306/BankMod";
+    private final String DBURL = "jdbc:mysql://127.0.0.1:3306/BankMod?allowMultiQueries=true";
     private final String DBUSERNAME = "root";
     private final String DBPWD = "password";
 

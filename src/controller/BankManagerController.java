@@ -43,4 +43,8 @@ public class BankManagerController {
         return bankManagerService.getCustomerData(customerId);
     }
 
+    public int withdrawBankProfits(double amount) throws Exception {
+        return bankManagerService.withdrawProfits(amount);
+    }
+
 }

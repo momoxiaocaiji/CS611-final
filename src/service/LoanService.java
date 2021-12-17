@@ -151,6 +151,12 @@ public class LoanService {
 
     }
 
+    public void deleteLoanFromDb(Connection connection,int loanId) throws SQLException {
+        String query = "delete from loan where loanId="+loanId;
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(query);
+    }
+
     public int payLoan(String customerId,String accountId,int loanId,double amount,String accountType) throws Exception {
         //get loan details
         Connection connection = dbController.connectToDb();
@@ -165,6 +171,12 @@ public class LoanService {
         }
 
         double totalPaymentPending = ((loan.getPrincipalAmount()*loan.getRateOfInterest()*loan.getTenure())/100)+loan.getPrincipalAmount();
+
+        if(totalPaymentPending<=0) {
+            //delete loan from db
+            deleteLoanFromDb(connection,loanId);
+            return bankConstants.getSUCCESS_CODE();
+        }
 
         if(accountType.equalsIgnoreCase("saving")) {
             String query1 = "select * from saving_account where customerId='"+customerId+"' and accountId='"+accountId+"';";

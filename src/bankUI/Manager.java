@@ -132,7 +132,7 @@ public class Manager extends JFrame implements ActionListener {
 //        stockList.add(new Stock("BB", 5.0, 7.8, 4.3, 4.9));
 //        wholeStockList = new StockListPanel(stockList, Constant.STOCK_MANAGER_MODIFY);
 //        wholeStockList.setSize(900, 800);
-        stock.add(wholeStockList);
+        //stock.add(wholeStockList);
 
         // loanRequest
         loanRequest = new JPanel();

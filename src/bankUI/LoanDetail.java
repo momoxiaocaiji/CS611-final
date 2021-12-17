@@ -14,8 +14,19 @@ public class LoanDetail extends JFrame implements ActionListener {
 
     private List<Loan> loanList;
     private String username;
+    private Core core;
 
     private JButton request = new JButton("request a loan");
+    private LoanListPanel jCenter;
+
+    public Core getCore() {
+        return core;
+    }
+
+    public void setCore(Core core) {
+        this.core = core;
+        jCenter.setCore(core);
+    }
 
     public LoanDetail(List<Loan> loanList, String username) {
         this.loanList = loanList;
@@ -35,7 +46,8 @@ public class LoanDetail extends JFrame implements ActionListener {
         add(jNorth, BorderLayout.NORTH);
 
         // center
-        JPanel jCenter = new LoanListPanel(loanList, Constant.LOAN_CUSTOMER);
+        jCenter = new LoanListPanel(loanList, Constant.LOAN_CUSTOMER);
+        jCenter.setUsername(username);
 
         add(jCenter, BorderLayout.CENTER);
 

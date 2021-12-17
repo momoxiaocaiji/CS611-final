@@ -26,20 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class Amount {
-    Map<String, Double> currencies;
-
-    public Amount() {
-        currencies = new HashMap<>();
-        currencies.put("USD", 1000.00);
-        currencies.put("CNY", 1000.00);
-        currencies.put("HKD", 1000.00);
-    }
-}
-
 public class Core extends JFrame implements ActionListener {
-
-    private static List<Amount> amountList = new ArrayList<>();
 
     private JTabbedPane tabMenu;
     private JPanel info, stock, transaction;
@@ -67,8 +54,6 @@ public class Core extends JFrame implements ActionListener {
     private StockController stockController = new StockController();
 
     public Core(List userInfo, String username) throws Exception {
-        //amountList.add(new Amount());
-        //amountList.add(new Amount());
         userAccountInfo = userInfo;
         this.username = username;
 
@@ -150,7 +135,7 @@ public class Core extends JFrame implements ActionListener {
         // -----------------------------------------
         // History
 
-        historyData = new HistoryTable(transactionController.getDailyReport(new java.sql.Date(new java.util.Date().getTime()).toString()));
+        historyData = new HistoryTable(transactionController.getDailyReportForCustomer(username));
         history = new JPanel();
         history.setLayout(new BorderLayout());
         history.add(new JScrollPane(historyData), BorderLayout.CENTER);
@@ -176,7 +161,7 @@ public class Core extends JFrame implements ActionListener {
         refresh.setFont(new Font("Raleway", Font.BOLD, 14));
         refresh.addActionListener(e -> {
             try {
-                historyData.resetData(transactionController.getDailyReport(new java.sql.Date(new java.util.Date().getTime()).toString()));
+                historyData.resetData(transactionController.getDailyReportForCustomer(username));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -244,7 +229,9 @@ public class Core extends JFrame implements ActionListener {
             } else if (ae.getSource() == loan) {
                 List<Loan> loanList = loanController.getLoansForCustomer(username).
                         stream().filter(loan -> loan.getIsLoanApproved() == 1).collect(Collectors.toList());
-                new LoanDetail(loanList , username).setVisible(true);
+                LoanDetail ld = new LoanDetail(loanList , username);
+                ld.setVisible(true);
+                ld.setCore(this);
             } else if (ae.getSource() == createSecurities) {
             	// onClick create button:
                 new CreateSecuritiesAccount("Securities", "1000001", username, this).setVisible(true);

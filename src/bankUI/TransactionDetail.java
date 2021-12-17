@@ -179,12 +179,15 @@ public class TransactionDetail extends JFrame implements ActionListener {
             jCenter.add(receiverAccount);
         }
 
-        pin.setBounds(130, 360, 200,30);
-        jCenter.add(pin);
+        if (type != Constant.TRANSACTION_LOAN) {
+            pin.setBounds(130, 360, 200,30);
+            jCenter.add(pin);
 
-        pinInput.setBounds(350, 360, 400,30);
-        pinInput.setBorder(BorderFactory.createEtchedBorder());
-        jCenter.add(pinInput);
+            pinInput.setBounds(350, 360, 400,30);
+            pinInput.setBorder(BorderFactory.createEtchedBorder());
+            jCenter.add(pinInput);
+        }
+
 
         //South
         JPanel jSouth = new JPanel();
@@ -234,7 +237,9 @@ public class TransactionDetail extends JFrame implements ActionListener {
                             "NA", Integer.parseInt(pinInput.getText()), Double.parseDouble(amountNum.getText()),
                             cType.getItemAt(cType.getSelectedIndex()));
                 } else if (type == Constant.TRANSACTION_DEPOSIT) {
-                   // rCode = transactionController.makeDeposit(username, )
+                    rCode = transactionController.makeDeposit(username, receiverAccount.getText(), "NA",
+                            Integer.parseInt(pinInput.getText()), Double.parseDouble(amountNum.getText()),
+                            cType.getItemAt(cType.getSelectedIndex()));
                 }
                 if (rCode == Constant.SUCCESS_CODE){
                     if (core != null) {

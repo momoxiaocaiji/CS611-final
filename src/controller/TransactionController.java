@@ -2,6 +2,7 @@ package controller;
 
 import model.BankConstants;
 import model.CheckingAccount;
+import model.SavingAccount;
 import model.Transaction;
 import service.AccountService;
 import service.LoanService;
@@ -45,10 +46,15 @@ public class TransactionController {
         return transactionService.getDailyReport(date);
     }
 
+    //function to get daily report for customer
+    public List<Transaction> getDailyReportForCustomer(String customerId) throws Exception{
+        return transactionService.getDailyReportForCustomer(customerId);
+    }
+
     public int makeWithdrawal(String customerId,String accountId,String receiverId,int pin,double amount,String currency) throws Exception {
         Object account = accountService.getAccountBasedOnId(dbController.connectToDb(),accountId);
         String accountType = (account instanceof CheckingAccount)?"checking":"saving";
-        int status = transactionService.makeWithdrawal(customerId,accountId,accountType,amount);
+        int status = transactionService.makeWithdrawal(customerId,accountId,accountType,amount,currency);
         if(status== bankConstants.getSUCCESS_CODE()){
             transactionService.insertTransactionIntoDb(customerId,accountId,"NA",amount,currency,"WITHDRAWAL");
             transactionService.payBankFees(amount, bankConstants.getDEFAULT_BANKID());
@@ -56,17 +62,19 @@ public class TransactionController {
         return status;
     }
 
-    public int makeDeposit(String customerId,String accountId,String accountType,double amount) throws Exception {
-        int status = transactionService.makeDeposit(customerId,accountId,accountType,amount);
+    public int makeDeposit(String customerId,String accountId,String receiverId,int pin,double amount,String currency) throws Exception {
+        Object account = accountService.getAccountBasedOnId(dbController.connectToDb(),accountId);
+        String accountType = (account instanceof CheckingAccount)?"checking":"saving";
+        int status = transactionService.makeDeposit(customerId,accountId,accountType,amount,currency);
         if(status== bankConstants.getSUCCESS_CODE()){
-            transactionService.insertTransactionIntoDb(customerId,accountId,"NA",amount,"USD","DEPOSIT");
+            transactionService.insertTransactionIntoDb(customerId,accountId,"NA",amount,currency,"DEPOSIT");
             transactionService.payBankFees(amount, bankConstants.getDEFAULT_BANKID());
         }
         return status;
     }
 
     public int makePayment(String customerId,String accountId,String accountType,double amount,String receiverName) throws Exception {
-        int status = transactionService.makePayment(customerId,accountId,accountType,amount);
+        int status = transactionService.makePayment(customerId,accountId,accountType,amount,"");
         if(status== bankConstants.getSUCCESS_CODE()){
             transactionService.insertTransactionIntoDb(customerId,accountId,receiverName,amount,"USD","DEPOSIT");
             transactionService.payBankFees(amount, bankConstants.getDEFAULT_BANKID());
@@ -74,7 +82,20 @@ public class TransactionController {
         return status;
     }
 
-    public int payLoan(String customerId,String accountId,String accountType,int loanId,double amount) throws Exception {
+    public int payLoan(String customerId,int loanId,double amount) throws Exception {
+        Object object = accountService.chooseBestAccount(customerId,amount);
+        if(object==null) {
+            return bankConstants.getACCOUNT_NOT_FOUND();
+        }
+        String accountType = "";String accountId="";
+        if(object instanceof CheckingAccount){
+            accountType = "checking";
+            accountId = ((CheckingAccount)object).getAccountId();
+        }else{
+            accountType = "saving";
+            accountId = ((SavingAccount)object).getAccountId();
+        }
+
         int status = loanService.payLoan(customerId,accountId,loanId,amount,accountType);
         if(status== bankConstants.getSUCCESS_CODE()){
             String receiverName = "LOAN "+loanId;
