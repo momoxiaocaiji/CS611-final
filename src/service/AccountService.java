@@ -256,18 +256,23 @@ public class AccountService {
     	//disable condition: savingAmount>=5000 && savingAmount-depositAmount>=2500; TODO && depositAmount>=1000
         if(!accountExists && doesSavingAccountExist(connection, customer) ){
             SavingAccount savingAccount = getSavingAccountInfoForCustomer(customer);
-        	savingAccount.setAmount(savingAccount.getAmount()-depositAmount);
-            //insert into account
-        	Statement statement = connection.createStatement();
-        	//generate the unique hash code
-        	int accountId = Objects.hash("SECURITIES",customer.getPersonId());
-            int rowCount = statement.executeUpdate("INSERT INTO securities_account (`accountId`, `customerId`, `investmentAmount`) "
-            		+ "VALUES ("+accountId+", '"+customer.getCustomerId()+"',"+depositAmount+");");
-            if(rowCount!=0) {
-                //successfully created saving account
-                responseStatus = bankConstants.getSUCCESS_CODE();
-            }else {
-                responseStatus = bankConstants.getERROR();
+            if(savingAccount.getAmount()>=5000 && savingAccount.getAmount()-depositAmount >=2500) {
+            	savingAccount.setAmount(savingAccount.getAmount()-depositAmount);
+                //insert into account
+            	Statement statement = connection.createStatement();
+            	//generate the unique hash code
+            	int accountId = Objects.hash("SECURITIES",customer.getPersonId());
+                int rowCount = statement.executeUpdate("INSERT INTO securities_account (`accountId`, `customerId`, `investmentAmount`) "
+                		+ "VALUES ("+accountId+", '"+customer.getCustomerId()+"',"+depositAmount+");");
+                if(rowCount!=0) {
+                    //successfully created saving account
+                    responseStatus = bankConstants.getSUCCESS_CODE();
+                }else {
+                    responseStatus = bankConstants.getERROR();
+                }
+            }
+            else {
+            	responseStatus = bankConstants.getERROR();
             }
         }else {
         	// accountExists, no saving account, or deposit amount illegal

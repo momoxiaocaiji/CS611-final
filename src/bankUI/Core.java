@@ -301,6 +301,8 @@ public class Core extends JFrame implements ActionListener {
     }
 
     public void fillStock(SecuritiesAccount securitiesAccount) throws SQLException, Exception {
+        stock.removeAll();
+
         JPanel securitiesAccountPanel = new JPanel();
         stock.add(securitiesAccountPanel, BorderLayout.NORTH);
         securitiesAccountPanel.setBackground(Color.white);

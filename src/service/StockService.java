@@ -64,7 +64,7 @@ public class StockService {
 	 * @param String ticker, String stockName, int open, double high, double low, double price, Date date
 	 * @return int statusCode
 	 */
-	public int createStock(String ticker, String stockName, int open, double high, double low, double price, Date date) throws Exception, SQLException {
+	public int createStock(String ticker, String stockName, double open, double high, double low, double price, Date date) throws Exception, SQLException {
 		int responseStatus = 0;
 		Connection connection = dbController.connectToDb();
 		//check whether this stock already exist
@@ -76,7 +76,7 @@ public class StockService {
             //stockId is a auto increment
             preparedStatement1.setString(1, ticker);
             preparedStatement1.setString(2, stockName);
-            preparedStatement1.setInt(3, open);
+            preparedStatement1.setDouble(3, open);
             preparedStatement1.setDouble(4, high);
             preparedStatement1.setDouble(5, low);
             preparedStatement1.setDouble(6, price);

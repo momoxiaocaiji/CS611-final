@@ -32,6 +32,12 @@ public class StockController {
 		return stockService.createStock(ticker, stockName, open, high, low, price, date);
 	}
 	
+	public int createStock(String ticker, double open) throws SQLException, Exception {
+    	java.util.Date javaDate = new java.util.Date();
+        java.sql.Date sqlDate = new java.sql.Date(javaDate.getTime());
+		return stockService.createStock(ticker, ticker, open, open, open, open, sqlDate);
+	}
+	
 	public void removeStock(String ticker) throws SQLException, Exception {
 		stockService.removeStock(ticker);
 	}

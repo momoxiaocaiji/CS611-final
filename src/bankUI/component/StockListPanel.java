@@ -157,7 +157,7 @@ public class StockListPanel extends JPanel{
                         //change the displayed stats of the securities account, when type == SALE
                         JOptionPane.showMessageDialog(null, "Sell complete");
                         try {
-							stockController.sellStock(s, Integer.parseInt(num.getText()), se);
+							//stockController.sellStock(s, Integer.parseInt(num.getText()), se);
 							//TODO a way to getPurchasePrice
 							CustomerOwnedStock cStock = stockController.getCustomerStock(s.getName(), se.getCustomerId());
 			    			se.sellStock(s.getCurrent(), s.getCurrent()-cStock.getPurchasePrice(), Integer.parseInt(num.getText()));

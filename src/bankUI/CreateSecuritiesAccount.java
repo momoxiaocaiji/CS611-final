@@ -90,15 +90,14 @@ public class CreateSecuritiesAccount extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(null, "Invalid amount!!");
                     return;
                 }
-
-//                int returnCode = accountController.createSecuritiesAccount(username, Double.parseDouble(investmentAmountInput.getText()));
-//                if (returnCode == Constant.SUCCESS_CODE) {
-//                    JOptionPane.showMessageDialog(null, "Success!!");
-//                    core.fillStock(accountController.getSecuritiesAccountInfo(username));
-//                    setVisible(false);
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Please try again!!");
-//                }
+                int returnCode = accountController.createSecuritiesAccount(username, Double.parseDouble(investmentAmountInput.getText()));
+                if (returnCode == Constant.SUCCESS_CODE) {
+                    JOptionPane.showMessageDialog(null, "Success!!");
+                    core.fillStock(accountController.getSecuritiesAccountInfo(username));
+                    setVisible(false);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please try again!!");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

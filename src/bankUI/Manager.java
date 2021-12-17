@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
@@ -28,9 +29,10 @@ public class Manager extends JFrame implements ActionListener {
     private JPanel checking, saving;
     private LoanListPanel loan, requestList;
     private StockListPanel ownStock, wholeStockList;
-    private JTextField customerID;
-    private JButton search;
+    private JTextField customerID, withdrawalNum;
+    private JButton search, exc;
     private HistoryTable historyData;
+    private JLabel profitNum;
 
     //MVC
     private BankManagerController bankManagerController = new BankManagerController();
@@ -147,15 +149,15 @@ public class Manager extends JFrame implements ActionListener {
         profit.setLayout(null);
         JLabel bankProfit = new JLabel("Bank Profit: ");
         bankProfit.setFont(new Font("System", Font.BOLD, 25));
-        JLabel profitNum = new JLabel("$10000.0");
+        profitNum = new JLabel(String.format("%.2f", bankManagerController.getBankBalance()));
         profitNum.setFont(new Font("System", Font.BOLD, 25));
 
         JLabel withdrawalProfit = new JLabel("Withdrawal Profit: ");
         withdrawalProfit.setFont(new Font("System", Font.BOLD, 25));
-        JTextField withdrawalNum = new JTextField(25);
+        withdrawalNum = new JTextField(25);
         withdrawalNum.setFont(new Font("System", Font.BOLD, 25));
 
-        JButton exc = new JButton("Withdrawal");
+        exc = new JButton("Withdrawal");
         setFont(new Font("Raleway", Font.BOLD, 25));
 
 
@@ -175,6 +177,7 @@ public class Manager extends JFrame implements ActionListener {
         profit.add(withdrawalNum);
 
         exc.setBounds(390, 500, 200, 50);
+        exc.addActionListener(this);
         profit.add(exc);
 
 
@@ -298,6 +301,15 @@ public class Manager extends JFrame implements ActionListener {
                 saving.revalidate();
                 loan.revalidate();
                 ownStock.revalidate();
+            }
+            else if (ae.getSource() == exc ) {
+                int rCode = bankManagerController.withdrawBankProfits(Double.parseDouble(withdrawalNum.getText()));
+                if (rCode == Constant.SUCCESS_CODE) {
+                    JOptionPane.showMessageDialog(null, "Happy time!! Evil Banker!!");
+                    profitNum.setText(String.format("%.2f", bankManagerController.getBankBalance()));
+                } else {
+                    JOptionPane.showMessageDialog(null, "You can't withdrawal!!");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

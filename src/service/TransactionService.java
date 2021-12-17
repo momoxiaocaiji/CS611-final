@@ -305,7 +305,7 @@ public class TransactionService {
     public int makePayment(String customerId,String accountId,String accountType,double amount,String currency) throws Exception {
         Connection connection = dbController.connectToDb();
         if(accountType.equalsIgnoreCase("saving")){
-            String query = "select * from saving_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
+            String query = "select * from saving_account where currency='"+currency.toUpperCase()+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
@@ -314,23 +314,24 @@ public class TransactionService {
                     return bankConstants.getINSUFFICIENT_FUNDS();
                 }else {
                     double amt = resultSet.getDouble("amount")-amount;
-                    String update = "update saving_account set amount="+amt+" where currency='"+currency+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    String update = "update saving_account set amount="+amt+" where currency='"+currency.toUpperCase()+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
                     statement.executeUpdate(update);
                     System.out.println("withdrawn");
                     return bankConstants.getSUCCESS_CODE();
                 }
             }
         }else{
-            String query = "select * from checking_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
+            String query = "select * from checking_account where currency='"+currency.toUpperCase()+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()){
+                System.out.println(resultSet.getDouble("amount"));
                 if(amount>resultSet.getDouble("amount")){
                     System.out.println("Insufficient funds");
                     return bankConstants.getINSUFFICIENT_FUNDS();
                 }else {
                     double amt = resultSet.getDouble("amount")-amount;
-                    String update = "update checking_account set amount="+amt+" where currency='"+currency+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    String update = "update checking_account set amount="+amt+" where currency='"+currency.toUpperCase()+"' and customerId='"+customerId+"' and accountId='"+accountId+"';";
                     statement.executeUpdate(update);
                     System.out.println("withdrawn");
                     return bankConstants.getSUCCESS_CODE();
