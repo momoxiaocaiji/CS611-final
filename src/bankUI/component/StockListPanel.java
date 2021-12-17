@@ -140,10 +140,6 @@ public class StockListPanel extends JPanel{
                     if (type == Constant.STOCK_CUSTOMER_SALE && Integer.parseInt(num.getText()) > s.getNum()) {
                         JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
                     }
-                	//buy: not enough #
-                    else if(type == Constant.STOCK_CUSTOMER_BUY && Integer.parseInt(num.getText()) > s.getOpen()) {
-                        JOptionPane.showMessageDialog(null, "Don't have enough # of stock");
-                    }
                     //buy: success
                     else if(type == Constant.STOCK_CUSTOMER_BUY) {
                         JOptionPane.showMessageDialog(null, "Buy complete");
@@ -219,7 +215,7 @@ public class StockListPanel extends JPanel{
             JButton addB = new JButton("+ Add a new stock");
             add(addB);
             addB.addActionListener( e -> {
-                new StockDetail("111111").setVisible(true);
+                new StockDetail().setVisible(true);
             });
         } else {
             JPanel empty = new JPanel();
