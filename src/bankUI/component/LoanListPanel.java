@@ -133,7 +133,7 @@ public class LoanListPanel extends JPanel {
                                 loanList = loanController.getAllLoans().stream().filter(loan -> loan.getIsLoanApproved() == 0)
                                         .collect(Collectors.toList());
                                 this.removeAll();
-                                fillPanel();
+                                resetData(loanList);
                                 this.revalidate();
                                 core.fillInfo(accountController.getAccountInfoForCustomer(username));
                             }

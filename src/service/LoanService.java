@@ -183,7 +183,7 @@ public class LoanService {
                     return bankConstants.getINSUFFICIENT_FUNDS();
                 }else{
                     double amt = currentBalance-amount;
-                    String update = "update saving_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    String update = "update saving_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"' and currency='USD';";
                     statement.executeUpdate(update);
                 }
             }else{
@@ -200,7 +200,7 @@ public class LoanService {
                     return bankConstants.getINSUFFICIENT_FUNDS();
                 }else{
                     double amt = currentBalance-amount;
-                    String update = "update checking_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"';";
+                    String update = "update checking_account set amount="+amt+" where customerId='"+customerId+"' and accountId='"+accountId+"' and currency='USD';";
                     statement.executeUpdate(update);
                 }
             }else{
