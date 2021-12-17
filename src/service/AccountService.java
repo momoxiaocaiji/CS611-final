@@ -129,7 +129,7 @@ public class AccountService {
                 preparedStatement1.setString(3,customer.getCustomerId());
                 preparedStatement1.setInt(4,pin);
                 preparedStatement1.setString(5,"USD");
-                preparedStatement1.setDouble(6,100.0);
+                preparedStatement1.setDouble(6,80.0);
                 status=preparedStatement1.executeUpdate();
                 break;
 

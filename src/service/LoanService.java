@@ -172,12 +172,6 @@ public class LoanService {
 
         double totalPaymentPending = ((loan.getPrincipalAmount()*loan.getRateOfInterest()*loan.getTenure())/100)+loan.getPrincipalAmount();
 
-        if(totalPaymentPending<=0) {
-            //delete loan from db
-            deleteLoanFromDb(connection,loanId);
-            return bankConstants.getSUCCESS_CODE();
-        }
-
         if(accountType.equalsIgnoreCase("saving")) {
             String query1 = "select * from saving_account where customerId='"+customerId+"' and accountId='"+accountId+"';";
             Statement statement1 = connection.createStatement();
@@ -215,9 +209,16 @@ public class LoanService {
         }
 
         //reduce amount in loan
-        double outstanding = totalPaymentPending-amount;
-        String payLoan = "update loan set amount="+outstanding+" where loanId="+loanId+";";
-        statement.executeUpdate(payLoan);
+//        double outstanding = totalPaymentPending-amount;
+//        String payLoan = "update loan set amount="+outstanding+" where loanId="+loanId+";";
+//        statement.executeUpdate(payLoan);
+
+//        if(totalPaymentPending<=0) {
+//            //delete loan from db
+//            deleteLoanFromDb(connection,loanId);
+//            return bankConstants.getSUCCESS_CODE();
+//        }
+        deleteLoanFromDb(connection,loanId);
 
         return bankConstants.getSUCCESS_CODE();
 

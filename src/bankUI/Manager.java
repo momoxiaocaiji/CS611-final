@@ -301,6 +301,7 @@ public class Manager extends JFrame implements ActionListener {
                     stockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
                     stockList.get(i).setNum(s.getQuantity());
                     stockList.get(i).setCost(s.getPurchasePrice());
+                    i++;
                 }
                 ownStock.resetData(stockList);
                 // -------------------------------

@@ -51,8 +51,8 @@ public class StockController {
 	}
 	
 	//TODO
-	public void sellStock(Stock s, int quantity, SecuritiesAccount securitiesAccount) throws SQLException, Exception {
-		CustomerOwnedStock cStock = getCustomerStock(s.getStockName(), securitiesAccount.getCustomerId());
+	public void sellStock(bankUI.entity.Stock s, int quantity, SecuritiesAccount securitiesAccount) throws SQLException, Exception {
+		CustomerOwnedStock cStock = getCustomerStock(s.getName(), securitiesAccount.getCustomerId());
 		stockService.sellStock(cStock, quantity, securitiesAccount);
 	}
 

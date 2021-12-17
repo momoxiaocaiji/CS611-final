@@ -281,7 +281,7 @@ public class TransactionService {
 
             if(currencyAvailable==1){
                 double total = account.getDouble("amount")+amount;
-                String update = "update checking_account set amount="+total+" where customerId='"+customerId+" and accountId='"+accountId+" and currency='"+currency+"';";
+                String update = "update checking_account set amount="+total+" where customerId='"+customerId+"'and accountId='"+accountId+"'and currency='"+currency+"';";
                 statement.executeUpdate(update);
                 return bankConstants.getSUCCESS_CODE();
             }else if(currencyAvailable==0) {

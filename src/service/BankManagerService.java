@@ -62,7 +62,8 @@ public class BankManagerService {
     //function to change stock price
     public int changeStockPrice(int stockId, double price) throws Exception {
         Date date = new Date(System.currentTimeMillis());
-        String query = "UPDATE stock set price="+price+" ,date='"+date+"' where stockId="+stockId+";";
+        String query = "UPDATE stock set price="+price+" ,date='"+date+"' ,high= CASE WHEN high < "+price+" THEN "+price+" ELSE high END," +
+                " low= CASE WHEN low > "+price+" THEN "+price+" ELSE low END where stockId="+stockId+";";
         Connection connection = dbController.connectToDb();
         Statement statement= connection.createStatement();
         int count = statement.executeUpdate(query);

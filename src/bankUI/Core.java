@@ -351,8 +351,8 @@ public class Core extends JFrame implements ActionListener {
         buyStock.setLayout(new BorderLayout());
         List<Stock> stockList = new ArrayList<>();
         //TODO where to call createStock, how to combine with date
-        stockController.createStock("AAA", "A1234", 10, 15, 7, 9, null);
-        stockController.createStock("BBB", "B1234", 20, 40, 30, 30, null);
+        //stockController.createStock("AAA", "A1234", 10, 15, 7, 9, null);
+        //stockController.createStock("BBB", "B1234", 20, 40, 30, 30, null);
         for(model.Stock s : stockController.getStockArrayList()) {
         	//let Stock.name = model.Stock.ticker
         	stockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
@@ -373,6 +373,7 @@ public class Core extends JFrame implements ActionListener {
         	customerStockList.add(new Stock(s.getTicker(), s.getOpen(), s.getHigh(), s.getLow(), s.getPrice()));
         	customerStockList.get(i).setNum(s.getQuantity());
         	customerStockList.get(i).setCost(s.getPurchasePrice());
+            i++;
         }
         StockListPanel saleList = new StockListPanel(customerStockList, Constant.STOCK_CUSTOMER_SALE, securitiesAccount);
         saleList.setPreferredSize(new Dimension(750, 650));

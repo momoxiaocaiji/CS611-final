@@ -125,7 +125,7 @@ public class LoanListPanel extends JPanel {
                 op.addActionListener(e -> {
                     if (type == Constant.LOAN_CUSTOMER) {
                         try {
-                            int rCode = transactionController.payLoan(username, l.getLoanId(), l.getPrincipalAmount());
+                            int rCode = transactionController.payLoan(username, l.getLoanId(), l.getPrincipalAmount() * 1.1);
                             if (rCode == Constant.INSUFFICIENT_FUNDS) {
                                 JOptionPane.showMessageDialog(null, "You don't have enough money.");
                             } else if (rCode == Constant.SUCCESS_CODE) {
