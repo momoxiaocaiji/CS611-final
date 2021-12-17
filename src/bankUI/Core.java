@@ -354,7 +354,7 @@ public class Core extends JFrame implements ActionListener {
         buyStock.add(buyList, BorderLayout.CENTER);
         buyStock.add(new JButton("Buy via Stock Code"), BorderLayout.SOUTH);
         buyList.setAssoFrame(this);
-
+        buyList.setUsername(username);
         // TODO update data display on sell
         List<Stock> customerStockList = new ArrayList<>();
         //TODO where to call createStock, how to combine with date
@@ -369,6 +369,7 @@ public class Core extends JFrame implements ActionListener {
         saleList.setPreferredSize(new Dimension(750, 650));
         saleStock.add(saleList);
         saleList.setAssoFrame(this);
+        saleList.setUsername(username);
     }
 
 //    public static void main(String[] args) {

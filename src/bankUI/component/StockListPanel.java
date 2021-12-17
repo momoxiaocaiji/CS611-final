@@ -4,6 +4,7 @@ import bankUI.Constant;
 import bankUI.Core;
 import bankUI.StockDetail;
 import bankUI.entity.Stock;
+import controller.AccountController;
 import controller.StockController;
 import model.CustomerOwnedStock;
 import model.SecuritiesAccount;
@@ -20,6 +21,18 @@ public class StockListPanel extends JPanel{
     private List<String> testData;
     private StockController stockController = new StockController();
     private SecuritiesAccount se;
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    // MVC
+    private AccountController accountController = new AccountController();
 
     public JFrame getAssoFrame() {
         return assoCore;
@@ -145,26 +158,34 @@ public class StockListPanel extends JPanel{
                         JOptionPane.showMessageDialog(null, "Buy complete");
                     	try {
 							stockController.buyStock(s.getName(), Integer.parseInt(num.getText()), se.getCustomerId());
-			    			se.buyStock(s.getCurrent(), Integer.parseInt(num.getText()));
+			    			//se.buyStock(s.getCurrent(), Integer.parseInt(num.getText()));
 						} catch (Exception e1) {
 							e1.printStackTrace();
 							System.out.println("error");
 						}
-                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+                        try {
+                            assoCore.fillStock(accountController.getSecuritiesAccountInfo(username));
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                     //sell: success
                     else if(type == Constant.STOCK_CUSTOMER_SALE) {
                         //change the displayed stats of the securities account, when type == SALE
                         JOptionPane.showMessageDialog(null, "Sell complete");
                         try {
-							//stockController.sellStock(s, Integer.parseInt(num.getText()), se);
+							// stockController.sellStock(s, Integer.parseInt(num.getText()), se);
 							//TODO a way to getPurchasePrice
 							CustomerOwnedStock cStock = stockController.getCustomerStock(s.getName(), se.getCustomerId());
 			    			se.sellStock(s.getCurrent(), s.getCurrent()-cStock.getPurchasePrice(), Integer.parseInt(num.getText()));
 						} catch (Exception e1) {
 							System.out.println(e1+"error");
 						}
-                        assoCore.changeInfo("$"+String.valueOf(se.getInvestmentAmount()));
+                        try {
+                            assoCore.fillStock(accountController.getSecuritiesAccountInfo(username));
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                     //others
                     else {
